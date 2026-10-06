@@ -1,0 +1,1896 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>頭前國中 英文單字小考線上抽測</title>
+  <style>
+    :root {
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --success: #16a34a;
+      --danger: #dc2626;
+      --bg: #f8fafc;
+      --card: #ffffff;
+      --text: #0f172a;
+      --text-muted: #64748b;
+      --border: #cbd5e1;
+      --radius: 14px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px 14px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 660px;
+      margin: 0 auto;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 18px;
+    }
+
+    header h1 {
+      font-size: 1.55rem;
+      font-weight: 800;
+      color: #1e3a8a;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    header p {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    .card {
+      background: var(--card);
+      border-radius: var(--radius);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+      border: 1px solid var(--border);
+      padding: 24px 20px;
+      margin-bottom: 20px;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1.3fr;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .form-group {
+      margin-bottom: 14px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 0.88rem;
+      font-weight: 700;
+      margin-bottom: 6px;
+      color: #334155;
+    }
+
+    .input-control {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      font-size: 0.95rem;
+      background: #fff;
+    }
+
+    .stats-card {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 10px;
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      border-radius: 10px;
+      padding: 12px;
+      margin-bottom: 18px;
+      text-align: center;
+    }
+    .stats-card .num {
+      font-size: 1.3rem;
+      font-weight: 800;
+      color: #1d4ed8;
+    }
+    .stats-card .label {
+      font-size: 0.78rem;
+      color: #64748b;
+      margin-top: 2px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 12px 20px;
+      font-size: 1rem;
+      font-weight: 600;
+      border-radius: 10px;
+      border: none;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: #fff;
+    }
+    .btn-primary:hover {
+      background: var(--primary-hover);
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text);
+    }
+    .btn-outline:hover {
+      background: #f1f5f9;
+    }
+
+    .btn-block {
+      width: 100%;
+    }
+
+    .preset-btn {
+      background: #f1f5f9;
+      border: 1px solid var(--border);
+      color: #334155;
+      font-size: 0.78rem;
+      padding: 5px 9px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .preset-btn:hover {
+      background: #e2e8f0;
+      border-color: #94a3b8;
+    }
+    .preset-btn.active {
+      background: #eff6ff;
+      border-color: var(--primary);
+      color: var(--primary);
+      font-weight: 700;
+    }
+
+    .modal-backdrop {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(15, 23, 42, 0.6);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      padding: 16px;
+    }
+    .modal-content {
+      background: #ffffff;
+      border-radius: 14px;
+      max-width: 480px;
+      width: 100%;
+      padding: 22px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    }
+
+    /* Quiz Screen */
+    .progress-bar-wrap {
+      width: 100%;
+      height: 8px;
+      background: #e2e8f0;
+      border-radius: 999px;
+      overflow: hidden;
+      margin-bottom: 16px;
+    }
+    .progress-bar {
+      height: 100%;
+      background: var(--primary);
+      width: 0%;
+      transition: width 0.3s;
+    }
+
+    .quiz-info-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      margin-bottom: 14px;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 999px;
+      font-size: 0.78rem;
+      font-weight: 600;
+    }
+    .badge-blue { background: #e0f2fe; color: #0284c7; }
+    .badge-amber { background: #fef3c7; color: #d97706; }
+
+    .question-box {
+      text-align: center;
+      padding: 20px 10px;
+      border-bottom: 1px solid #e2e8f0;
+      margin-bottom: 20px;
+    }
+    .question-prompt {
+      font-size: 1.7rem;
+      font-weight: 800;
+      color: #0f172a;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin: 10px 0 6px;
+    }
+    .speak-btn {
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      color: var(--primary);
+      font-size: 1.15rem;
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .options-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+    }
+    .option-btn {
+      padding: 13px 16px;
+      text-align: left;
+      font-size: 1rem;
+      font-weight: 500;
+      background: #f8fafc;
+      border: 2px solid var(--border);
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.12s;
+    }
+    .option-btn:hover {
+      background: #f1f5f9;
+      border-color: #94a3b8;
+    }
+    .option-btn.correct {
+      background: #ecfdf5;
+      border-color: var(--success);
+      color: #065f46;
+      font-weight: 700;
+    }
+    .option-btn.wrong {
+      background: #fef2f2;
+      border-color: var(--danger);
+      color: #991b1b;
+      font-weight: 700;
+    }
+
+    /* Result Screen */
+    .result-score-wrap {
+      width: 130px;
+      height: 130px;
+      border-radius: 50%;
+      margin: 0 auto 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: #eff6ff;
+      border: 5px solid var(--primary);
+    }
+    .result-score-wrap .score {
+      font-size: 2.6rem;
+      font-weight: 900;
+      color: var(--primary);
+      line-height: 1;
+    }
+    .result-score-wrap .unit {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    .status-toast {
+      background: #ecfdf5;
+      border: 1px solid #a7f3d0;
+      color: #065f46;
+      padding: 10px;
+      border-radius: 8px;
+      text-align: center;
+      font-size: 0.9rem;
+      font-weight: 600;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .student-badge-card {
+      background: #f8fafc;
+      border: 1px dashed var(--border);
+      border-radius: 8px;
+      padding: 10px;
+      text-align: center;
+      font-size: 0.95rem;
+      margin-bottom: 16px;
+      color: #334155;
+    }
+
+    .wrong-card {
+      background: #fef2f2;
+      border-left: 4px solid var(--danger);
+      border-radius: 8px;
+      padding: 10px 14px;
+      margin-bottom: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.92rem;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <header>
+      <h1>📚 頭前國中 907 班 英文單字小考</h1>
+      <p>115學年 九年七班 聯絡簿單字片語抽考系統 • 每次隨機 10 題 • 自動登記成績</p>
+    </header>
+
+    <!-- 1. 開始設定畫面 -->
+    <div id="screen-start" class="card">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-wrap: wrap; gap: 6px;">
+        <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+          <span style="font-weight: 700; color: #334155; font-size: 0.92rem;">👤 考生基本資料</span>
+          <span id="cloud-sync-status-badge"></span>
+        </div>
+        <div style="display: flex; gap: 6px;">
+          <button type="button" class="btn btn-outline" style="font-size: 0.78rem; padding: 3px 8px; border-radius: 6px;" onclick="openRosterModal()">⚙️ 設定名冊</button>
+          <button type="button" class="btn btn-outline" style="font-size: 0.78rem; padding: 3px 8px; border-radius: 6px; color: #1d4ed8; border-color: #bfdbfe; background: #eff6ff;" onclick="openSyncConfigPrompt()">🔗 雲端同步設定</button>
+        </div>
+      </div>
+
+      <div class="form-grid">
+        <div>
+          <label for="student-class">班級 *</label>
+          <input type="text" id="student-class" class="input-control" placeholder="例: 907" value="907" required>
+        </div>
+        <div>
+          <label for="student-no">座號 * <span style="font-size:0.75rem; color:#2563eb; font-weight:normal;">(輸入直接顯姓名)</span></label>
+          <input type="number" id="student-no" class="input-control" placeholder="例: 38" value="38" min="1" max="60" oninput="lookupStudentName()" required>
+        </div>
+        <div>
+          <label for="student-name">姓名 *</label>
+          <input type="text" id="student-name" class="input-control" placeholder="座號輸入後自動帶出" value="劉真妮" required>
+        </div>
+      </div>
+      <div id="name-lookup-hint" style="font-size:0.83rem; margin-top:-8px; margin-bottom:14px; min-height:20px;">
+        <span style="color: #16a34a; font-weight: 600;">✅ 座號 38 號：劉真妮</span>
+      </div>
+
+      <div class="stats-card">
+        <div class="stats-item">
+          <div class="num" id="stat-current-pool">112</div>
+          <div class="label" id="stat-pool-label">9/14~10/5 題庫數</div>
+        </div>
+        <div class="stats-item">
+          <div class="num" id="stat-quiz-count">10 題</div>
+          <div class="label">每次隨機抽考</div>
+        </div>
+        <div class="stats-item">
+          <div class="num">100 分</div>
+          <div class="label">測驗滿分</div>
+        </div>
+      </div>
+
+      <!-- 測驗進度日期起訖選擇（預設鎖定，需密碼 123456 解鎖） -->
+      <div class="form-group" style="background: #f8fafc; border: 1px solid var(--border); border-radius: 10px; padding: 14px; margin-bottom: 16px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+          <label style="font-weight: 700; color: #1e3a8a; font-size: 0.92rem; margin: 0; display: flex; align-items: center; gap: 5px;">
+            <span id="range-lock-icon">🔒</span> 測驗進度日期起訖
+          </label>
+          <button type="button" id="teacher-range-btn" class="btn btn-outline" style="font-size: 0.78rem; padding: 4px 10px; color: #b45309; border-color: #fde68a; background: #fffbeb;" onclick="toggleTeacherRangeSetting()">
+            🔒 老師設定起訖(38號 劉真妮 專用)
+          </button>
+        </div>
+
+        <div id="range-lock-notice" style="font-size: 0.8rem; color: #475569; background: #ffffff; border: 1px solid #e2e8f0; padding: 7px 10px; border-radius: 6px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center;">
+          <span id="range-lock-text">🔒 <b>僅限 38 號 劉真妮 老師有權限設定</b>（學生無權修改）</span>
+          <span id="date-range-summary" style="font-size: 0.82rem; color: #2563eb; font-weight: 700;"></span>
+        </div>
+        
+        <div style="display: grid; grid-template-columns: 1fr auto 1fr; gap: 8px; align-items: center;">
+          <div>
+            <span style="font-size: 0.75rem; color: #64748b; font-weight: 600; display: block; margin-bottom: 3px;">起始日期</span>
+            <select id="date-start" class="input-control" onchange="onDateRangeChange()" disabled></select>
+          </div>
+          <div style="font-weight: 700; color: #64748b; margin-top: 18px; font-size: 1rem; text-align: center;">至</div>
+          <div>
+            <span style="font-size: 0.75rem; color: #64748b; font-weight: 600; display: block; margin-bottom: 3px;">結束日期</span>
+            <select id="date-end" class="input-control" onchange="onDateRangeChange()" disabled></select>
+          </div>
+        </div>
+
+        <!-- 常用範圍快捷鍵 -->
+        <div style="margin-top: 10px;">
+          <span style="font-size: 0.76rem; color: #64748b; display: block; margin-bottom: 5px;">⚡ 常見範圍快捷鍵（需解鎖後方可點選）：</span>
+          <div id="preset-buttons-wrap" style="display: flex; flex-wrap: wrap; gap: 6px;">
+            <button type="button" class="preset-btn active" id="preset-btn-default" onclick="handlePresetClick('9/14', '10/5', this)">⭐ 目前未小考 (9/14~10/5)</button>
+            <button type="button" class="preset-btn" onclick="handlePresetClick('9/3', '10/8', this)">第1次段考 (9/3~10/8)</button>
+            <button type="button" class="preset-btn" onclick="handlePresetClick('10/12', '11/27', this)">第2次段考 (10/12~11/27)</button>
+            <button type="button" class="preset-btn" onclick="handlePresetClick('11/30', '1/19', this)">第3次段考 (11/30~1/19)</button>
+            <button type="button" class="preset-btn" onclick="handlePresetClick('9/3', '1/19', this)">全學期總複習 (9/3~1/19)</button>
+            <button type="button" class="preset-btn" onclick="handlePresetClick('10/5', '10/5', this)">今日進度 (10/5)</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="cat-select">📖 測驗項目：</label>
+        <select id="cat-select" class="input-control" onchange="updatePoolStats()">
+          <option value="both" selected>全部包含（核心單字 ＋ 重點片語）</option>
+          <option value="word">僅抽考 核心單字</option>
+          <option value="phrase">僅抽考 重點片語</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="mode-select">📝 題目模式：</label>
+        <select id="mode-select" class="input-control">
+          <option value="mixed" selected>🔀 綜合測驗（英選中 ＋ 中選英 混合）</option>
+          <option value="en-to-zh">英選中（看英文選中文意義）</option>
+          <option value="zh-to-en">中選英（看中文選英文單字）</option>
+        </select>
+      </div>
+
+      <button class="btn btn-primary btn-block" style="padding: 14px; font-size: 1.1rem; margin-top: 10px;" onclick="startQuiz()">
+        🚀 開始抽考 10 題
+      </button>
+
+      <button type="button" class="btn btn-outline btn-block" style="margin-top: 10px; border-color: #2563eb; color: #1d4ed8; font-weight: 700; background: #eff6ff;" onclick="openScoresModal()">
+        📊 查看 907 班全班同學成績榜（跨載具即時同步）
+      </button>
+      <div style="text-align: center; font-size: 0.8rem; color: #64748b; margin-top: 6px;">
+        💡 點開可查看全班 01~31 號所有同學的測驗成績與最高分
+      </div>
+    </div>
+
+    <!-- 2. 測驗作答中畫面 -->
+    <div id="screen-quiz" class="card" style="display: none;">
+      <div class="progress-bar-wrap">
+        <div id="progress-bar" class="progress-bar"></div>
+      </div>
+
+      <div class="quiz-info-bar">
+        <span id="quiz-progress-text">第 1 / 10 題（每題 10 分）</span>
+        <div>
+          <span class="badge badge-amber" id="quiz-date-badge">9/14</span>
+          <span class="badge badge-blue" id="quiz-type-badge">核心單字</span>
+        </div>
+      </div>
+
+      <div class="question-box">
+        <div style="font-size: 0.85rem; color: #0284c7; font-weight: 600;" id="question-mode-text">英選中 選擇題</div>
+        <div class="question-prompt">
+          <span id="question-prompt-text">alive</span>
+          <button class="speak-btn" id="speak-btn" onclick="speakCurrentWord()" title="播放發音">🔊</button>
+        </div>
+        <div id="question-hint" style="font-size: 0.9rem; color: var(--text-muted);">請點選正確的中文意思：</div>
+      </div>
+
+      <div id="options-container" class="options-grid"></div>
+
+      <div id="next-container" style="display: none; margin-top: 18px;">
+        <button class="btn btn-primary btn-block" onclick="nextQuestion()" id="next-btn">下一題 ➔</button>
+      </div>
+    </div>
+
+    <!-- 3. 結果統計畫面 -->
+    <div id="screen-result" class="card" style="display: none;">
+      <div class="status-toast" id="cloud-status-toast">
+        ⏳ 正在自動將成績登記至老師的雲端試算表...
+      </div>
+
+      <div class="student-badge-card" id="result-student-info">
+        115 班 ｜ 座號：01 ｜ 姓名：同學
+      </div>
+
+      <div class="result-score-wrap">
+        <div class="score" id="result-score">100</div>
+        <div class="unit">得分 / 100</div>
+      </div>
+
+      <div id="result-feedback" style="text-align: center; font-size: 1.15rem; font-weight: 700; margin-bottom: 20px;">
+        恭喜滿分！🎉
+      </div>
+
+      <div id="wrong-container" style="display: none;">
+        <div style="font-weight: 700; color: #dc2626; margin-bottom: 10px; font-size: 0.95rem;">
+          ⚠️ 本次答錯題目（請加強複習）：
+        </div>
+        <div id="wrong-items-list"></div>
+        <div style="font-size: 0.84rem; color: #991b1b; background: #fef2f2; border: 1px solid #fecaca; border-radius: 8px; padding: 8px 12px; margin-top: 10px; line-height: 1.5;">
+          📌 <b>老師評分規定</b>：錯題僅供訂正複習，不能只改正錯題就變100分！若欲改變或提升成績，<b>必須點擊下方「🔄 重新抽 10 題完整重測」</b>，登記成績將自動保留全班每位同學測驗的<b>最高分</b>。
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1.3fr 1fr; gap: 10px; margin-top: 20px;">
+        <button class="btn btn-primary" onclick="startQuiz()">🔄 重新抽 10 題完整重測</button>
+        <button class="btn btn-outline" onclick="goHome()">🏠 回主選單</button>
+      </div>
+
+      <button type="button" class="btn btn-outline btn-block" style="margin-top: 10px; border-color: #2563eb; color: #1d4ed8; font-weight: 700; background: #eff6ff;" onclick="openScoresModal()">
+        📊 查看 907 班全班同學成績榜（查看每位同學最高分）
+      </button>
+    </div>
+  </div>
+
+  <script>
+    // ========================================================
+    // 🌐 跨載具雲端同步設定 (GitHub Pages / 外部網頁 專用)
+    // 若將本系統放到 GitHub Pages，只需將 Google Apps Script 發布網址填入下方引號中：
+    // 例如: const DEFAULT_GAS_API_URL = "https://script.google.com/macros/s/AKfycb.../exec";
+    // ========================================================
+    const DEFAULT_GAS_API_URL = ""; 
+
+    function getGasApiUrl() {
+      try {
+        const saved = localStorage.getItem("touqian_gas_api_url");
+        if (saved && saved.trim()) return saved.trim();
+      } catch(e) {}
+      return DEFAULT_GAS_API_URL.trim();
+    }
+
+    function updateSyncStatusBadge() {
+      const badge = document.getElementById("cloud-sync-status-badge");
+      if (!badge) return;
+      const url = getGasApiUrl();
+      if (url || (typeof google !== "undefined" && google.script && google.script.run)) {
+        badge.innerHTML = `<span style="font-size:0.72rem; background:#ecfdf5; color:#047857; border:1px solid #a7f3d0; padding:2px 7px; border-radius:999px; font-weight:700;">🟢 全班跨載具已連線</span>`;
+      } else {
+        badge.innerHTML = `<span style="font-size:0.72rem; background:#fff7ed; color:#c2410c; border:1px solid #ffedd5; padding:2px 7px; border-radius:999px; font-weight:700;" title="點右上角「🔗 雲端同步設定」設定網址">⚠️ 單機模式(未連線試算表)</span>`;
+      }
+    }
+
+    function openSyncConfigPrompt() {
+      const pwd = prompt("🔐 請輸入教師管理密碼 (123456)：");
+      if (pwd === null) return;
+      if (pwd.trim() !== "123456") {
+        alert("❌ 密碼錯誤！僅限 38 號 劉真妮 老師有權限設定。");
+        return;
+      }
+      const currentUrl = getGasApiUrl();
+      const input = prompt("🌐【GitHub Pages 跨載具雲端同步設定】\n請貼上您的 Google Apps Script 部署之 Web App 網址（exec 結尾）：\n(若要清除連線請留空確認)", currentUrl);
+      if (input === null) return;
+      const trimmed = input.trim();
+      localStorage.setItem("touqian_gas_api_url", trimmed);
+      if (trimmed) {
+        alert("✅ 雲端同步網址設定成功！\nGitHub Pages 現在已與 Google 雲端試算表記錄連線，全班交卷皆可即時跨載具同步！");
+      } else {
+        alert("ℹ️ 已清除自訂雲端網址，切換為本機儲存模式。");
+      }
+      updateSyncStatusBadge();
+      loadAndRenderScores();
+    }
+
+    // 輕量化 JSONP 函式（相容所有手機與電腦，100% 避開跨網域限制）
+    function fetchJsonp(url, callback) {
+      const cbName = "gas_cb_" + Math.round(1000000 * Math.random());
+      const script = document.createElement("script");
+      let finished = false;
+      const timer = setTimeout(function() {
+        if (!finished) {
+          finished = true;
+          try { delete window[cbName]; } catch(e) { window[cbName] = undefined; }
+          if (script.parentNode) script.parentNode.removeChild(script);
+          if (callback) callback(null);
+        }
+      }, 10000);
+
+      window[cbName] = function(data) {
+        if (!finished) {
+          finished = true;
+          clearTimeout(timer);
+          try { delete window[cbName]; } catch(e) { window[cbName] = undefined; }
+          if (script.parentNode) script.parentNode.removeChild(script);
+          if (callback) callback(data);
+        }
+      };
+      script.onerror = function() {
+        if (!finished) {
+          finished = true;
+          clearTimeout(timer);
+          try { delete window[cbName]; } catch(e) { window[cbName] = undefined; }
+          if (script.parentNode) script.parentNode.removeChild(script);
+          if (callback) callback(null);
+        }
+      };
+      script.src = url + (url.includes("?") ? "&" : "?") + "callback=" + cbName;
+      document.head.appendChild(script);
+    }
+
+    // 跨平台交卷 API（支援 GitHub Pages 跨網域送出）
+    function cloudSubmitScore(payload, successHandler, failureHandler) {
+      if (typeof google !== "undefined" && google.script && google.script.run) {
+        google.script.run
+          .withSuccessHandler(successHandler)
+          .withFailureHandler(failureHandler)
+          .submitStudentScore(payload);
+        return;
+      }
+
+      const apiUrl = getGasApiUrl();
+      if (apiUrl) {
+        const queryParams = new URLSearchParams({
+          action: "submitScore",
+          className: payload.className || "907",
+          seatNo: payload.seatNo || "",
+          name: payload.name || "",
+          score: payload.score !== undefined ? payload.score : 0,
+          range: payload.range || "",
+          wrongWords: payload.wrongWords || ""
+        });
+        fetchJsonp(apiUrl + (apiUrl.includes("?") ? "&" : "?") + queryParams.toString(), function(res) {
+          if (res && res.success) {
+            if (successHandler) successHandler(res);
+          } else {
+            if (failureHandler) failureHandler(res ? res.error : "送出失敗");
+          }
+        });
+        return;
+      }
+
+      if (successHandler) successHandler({ success: true, localOnly: true });
+    }
+
+    // 跨平台取得全班成績 API
+    function cloudGetAllScores(successHandler, failureHandler) {
+      if (typeof google !== "undefined" && google.script && google.script.run) {
+        google.script.run
+          .withSuccessHandler(successHandler)
+          .withFailureHandler(failureHandler)
+          .getAllScores();
+        return;
+      }
+
+      const apiUrl = getGasApiUrl();
+      if (apiUrl) {
+        fetchJsonp(apiUrl + (apiUrl.includes("?") ? "&" : "?") + "action=getAllScores", function(res) {
+          if (res && res.success && Array.isArray(res.scores)) {
+            if (successHandler) successHandler(res.scores);
+          } else if (Array.isArray(res)) {
+            if (successHandler) successHandler(res);
+          } else {
+            if (failureHandler) failureHandler("未能成功讀取雲端成績");
+          }
+        });
+        return;
+      }
+
+      try {
+        const list = JSON.parse(localStorage.getItem("touqian_scores_records") || "[]");
+        if (successHandler) successHandler(list);
+      } catch(e) {
+        if (successHandler) successHandler([]);
+      }
+    }
+
+    // 跨平台取得目前測驗範圍
+    function cloudGetActiveRange(successHandler) {
+      if (typeof google !== "undefined" && google.script && google.script.run) {
+        google.script.run
+          .withSuccessHandler(successHandler)
+          .getActiveQuizRange();
+        return;
+      }
+
+      const apiUrl = getGasApiUrl();
+      if (apiUrl) {
+        fetchJsonp(apiUrl + (apiUrl.includes("?") ? "&" : "?") + "action=getRange", function(res) {
+          if (res && res.start && res.end) {
+            if (successHandler) successHandler(res);
+          }
+        });
+      }
+    }
+
+    // 跨平台設定測驗範圍（僅限 38 號 劉真妮 老師，需驗證密碼 123456）
+    function cloudSetActiveRange(password, startDate, endDate, successHandler) {
+      if (typeof google !== "undefined" && google.script && google.script.run) {
+        google.script.run
+          .withSuccessHandler(function(res) {
+            if (successHandler) successHandler(res);
+          })
+          .setActiveQuizRange(password, startDate, endDate);
+        return;
+      }
+
+      const apiUrl = getGasApiUrl();
+      if (apiUrl) {
+        const queryParams = new URLSearchParams({
+          action: "setRange",
+          password: password,
+          start: startDate,
+          end: endDate
+        });
+        fetchJsonp(apiUrl + (apiUrl.includes("?") ? "&" : "?") + queryParams.toString(), function(res) {
+          if (successHandler) successHandler(res);
+        });
+      }
+    }
+
+    // 跨平台清除成績 API（需驗證密碼 123456）
+    function cloudClearScores(password, successHandler, failureHandler) {
+      if (typeof google !== "undefined" && google.script && google.script.run) {
+        google.script.run
+          .withSuccessHandler(successHandler)
+          .withFailureHandler(failureHandler)
+          .clearAllScores(password);
+        return;
+      }
+
+      const apiUrl = getGasApiUrl();
+      if (apiUrl) {
+        const queryParams = new URLSearchParams({
+          action: "clearScores",
+          password: password
+        });
+        fetchJsonp(apiUrl + (apiUrl.includes("?") ? "&" : "?") + queryParams.toString(), function(res) {
+          if (res && res.success) {
+            if (successHandler) successHandler(res);
+          } else {
+            if (failureHandler) failureHandler(res ? res.error : "清除失敗");
+          }
+        });
+        return;
+      }
+
+      if (successHandler) successHandler({ success: true, localOnly: true });
+    }
+
+    // 全學期題庫 (9/3 ~ 1/19，共 528 個核心單字與重點片語)
+    let ALL_WORDS_DATA = [];
+
+    // 內嵌全學期完整題庫
+    const EMBEDDED_DATA = [
+      {"date":"9/3","type":"word","pos":"n.","word":"ability","meaning":"能力"},{"date":"9/3","type":"word","pos":"adj.","word":"able","meaning":"有能力的"},{"date":"9/3","type":"word","pos":"prep./adv.","word":"about","meaning":"關於；大約"},{"date":"9/3","type":"word","pos":"prep./adv.","word":"above","meaning":"在……之上"},{"date":"9/3","type":"word","pos":"adv.","word":"abroad","meaning":"在國外"},{"date":"9/3","type":"phrase","pos":"片語","word":"a couple of","meaning":"幾個；一對"},{"date":"9/3","type":"phrase","pos":"片語","word":"a few","meaning":"一些（接可數名詞）"},{"date":"9/3","type":"phrase","pos":"片語","word":"a fraction of","meaning":"一小部分"},
+      {"date":"9/4","type":"word","pos":"adj.","word":"absent","meaning":"缺席的"},{"date":"9/4","type":"word","pos":"v.","word":"accept","meaning":"接受"},{"date":"9/4","type":"word","pos":"n.","word":"accident","meaning":"意外事故"},{"date":"9/4","type":"word","pos":"prep./adv.","word":"across","meaning":"橫越；在對面"},{"date":"9/4","type":"word","pos":"v./n.","word":"act","meaning":"行動；表演"},{"date":"9/4","type":"phrase","pos":"片語","word":"a kind of","meaning":"一種……"},{"date":"9/4","type":"phrase","pos":"片語","word":"a lack of","meaning":"缺乏……"},{"date":"9/4","type":"phrase","pos":"片語","word":"a little","meaning":"一點點（接不可數名詞）"},
+      {"date":"9/7","type":"word","pos":"n.","word":"action","meaning":"行動；動作"},{"date":"9/7","type":"word","pos":"adj.","word":"active","meaning":"活躍的；積極的"},{"date":"9/7","type":"word","pos":"n.","word":"activity","meaning":"活動"},{"date":"9/7","type":"word","pos":"n.","word":"actor","meaning":"演員"},{"date":"9/7","type":"word","pos":"n.","word":"actress","meaning":"女演員"},{"date":"9/7","type":"phrase","pos":"片語","word":"a lot of","meaning":"許多"},{"date":"9/7","type":"phrase","pos":"片語","word":"a number of","meaning":"許多（接可數）"},{"date":"9/7","type":"phrase","pos":"片語","word":"a pair of","meaning":"一雙；一件"},
+      {"date":"9/8","type":"word","pos":"v.","word":"add","meaning":"增加；添加"},{"date":"9/8","type":"word","pos":"n.","word":"address","meaning":"地址"},{"date":"9/8","type":"word","pos":"v.","word":"admire","meaning":"欽佩；欣賞"},{"date":"9/8","type":"word","pos":"n.","word":"adult","meaning":"成人"},{"date":"9/8","type":"word","pos":"n.","word":"advice","meaning":"建議；忠告"},{"date":"9/8","type":"phrase","pos":"片語","word":"a piece of","meaning":"一張；一片"},{"date":"9/8","type":"phrase","pos":"片語","word":"a series of","meaning":"一連串的"},{"date":"9/8","type":"phrase","pos":"片語","word":"a set of","meaning":"一套；一組"},
+      {"date":"9/9","type":"word","pos":"v.","word":"advise","meaning":"勸告；建議"},{"date":"9/9","type":"word","pos":"adj.","word":"afraid","meaning":"害怕的"},{"date":"9/9","type":"word","pos":"n.","word":"afternoon","meaning":"下午"},{"date":"9/9","type":"word","pos":"adv.","word":"again","meaning":"再次"},{"date":"9/9","type":"word","pos":"prep.","word":"against","meaning":"反對；對抗"},{"date":"9/9","type":"phrase","pos":"片語","word":"a waste of","meaning":"浪費……"},{"date":"9/9","type":"phrase","pos":"片語","word":"above all","meaning":"最重要的是"},{"date":"9/9","type":"phrase","pos":"片語","word":"according to","meaning":"根據"},
+      {"date":"9/10","type":"word","pos":"n.","word":"age","meaning":"年齡"},{"date":"9/10","type":"word","pos":"v.","word":"agree","meaning":"同意"},{"date":"9/10","type":"word","pos":"adv.","word":"ahead","meaning":"向前；在前面"},{"date":"9/10","type":"word","pos":"v./n.","word":"aim","meaning":"目標；瞄準"},{"date":"9/10","type":"word","pos":"n.","word":"air","meaning":"空氣"},{"date":"9/10","type":"phrase","pos":"片語","word":"act as","meaning":"擔任；充當"},{"date":"9/10","type":"phrase","pos":"片語","word":"add to","meaning":"增加"},{"date":"9/10","type":"phrase","pos":"片語","word":"after all","meaning":"畢竟"},
+      {"date":"9/11","type":"word","pos":"n.","word":"airplane","meaning":"飛機"},{"date":"9/11","type":"word","pos":"n.","word":"airport","meaning":"機場"},{"date":"9/11","type":"word","pos":"n.","word":"alarm","meaning":"鬧鐘；警報"},{"date":"9/11","type":"word","pos":"n.","word":"album","meaning":"相簿；專輯"},{"date":"9/11","type":"word","pos":"adj.","word":"alike","meaning":"相似的"},{"date":"9/11","type":"phrase","pos":"片語","word":"again and again","meaning":"一再地"},{"date":"9/11","type":"phrase","pos":"片語","word":"agree with","meaning":"同意（某人）"},{"date":"9/11","type":"phrase","pos":"片語","word":"aim at","meaning":"瞄準；旨在"},
+
+      // 9/14 ~ 10/5 未小考範圍
+      {"date":"9/14","type":"word","pos":"adj.","word":"alive","meaning":"活著的"},{"date":"9/14","type":"word","pos":"v.","word":"allow","meaning":"允許"},{"date":"9/14","type":"word","pos":"adv.","word":"almost","meaning":"幾乎"},{"date":"9/14","type":"word","pos":"adj./adv.","word":"alone","meaning":"單獨地"},{"date":"9/14","type":"word","pos":"prep.","word":"along","meaning":"沿著"},{"date":"9/14","type":"phrase","pos":"片語","word":"all at once","meaning":"突然地"},{"date":"9/14","type":"phrase","pos":"片語","word":"all day long","meaning":"一整天"},{"date":"9/14","type":"phrase","pos":"片語","word":"all in all","meaning":"總而言之"},
+      {"date":"9/15","type":"word","pos":"adv.","word":"already","meaning":"已經"},{"date":"9/15","type":"word","pos":"adv.","word":"also","meaning":"也"},{"date":"9/15","type":"word","pos":"conj.","word":"although","meaning":"雖然"},{"date":"9/15","type":"word","pos":"adv.","word":"always","meaning":"總是"},{"date":"9/15","type":"word","pos":"adj.","word":"amazing","meaning":"令人驚奇的"},{"date":"9/15","type":"phrase","pos":"片語","word":"all kinds of","meaning":"各種各樣的"},{"date":"9/15","type":"phrase","pos":"片語","word":"all of a sudden","meaning":"突然"},{"date":"9/15","type":"phrase","pos":"片語","word":"all over","meaning":"到處；遍及"},
+      {"date":"9/16","type":"word","pos":"n./adj.","word":"amber","meaning":"琥珀色"},{"date":"9/16","type":"word","pos":"n.","word":"ambition","meaning":"野心；抱負"},{"date":"9/16","type":"word","pos":"n.","word":"ambulance","meaning":"救護車"},{"date":"9/16","type":"word","pos":"prep.","word":"among","meaning":"在……之中"},{"date":"9/16","type":"word","pos":"n.","word":"amount","meaning":"數量"},{"date":"9/16","type":"phrase","pos":"片語","word":"all the time","meaning":"總是"},{"date":"9/16","type":"phrase","pos":"片語","word":"all the way","meaning":"一路上"},{"date":"9/16","type":"phrase","pos":"片語","word":"along with","meaning":"與……一起"},
+      {"date":"9/17","type":"word","pos":"adj.","word":"ancient","meaning":"古老的"},{"date":"9/17","type":"word","pos":"adj.","word":"angry","meaning":"生氣的"},{"date":"9/17","type":"word","pos":"n.","word":"animal","meaning":"動物"},{"date":"9/17","type":"word","pos":"n.","word":"ankle","meaning":"腳踝"},{"date":"9/17","type":"word","pos":"adj./pron.","word":"another","meaning":"另一個"},{"date":"9/17","type":"phrase","pos":"片語","word":"answer for","meaning":"對……負責"},{"date":"9/17","type":"phrase","pos":"片語","word":"apart from","meaning":"除了……之外"},{"date":"9/17","type":"phrase","pos":"片語","word":"apologize to","meaning":"向……道歉"},
+      {"date":"9/18","type":"word","pos":"v./n.","word":"answer","meaning":"回答；答案"},{"date":"9/18","type":"word","pos":"n.","word":"ant","meaning":"螞蟻"},{"date":"9/18","type":"word","pos":"adj.","word":"anxious","meaning":"焦慮的"},{"date":"9/18","type":"word","pos":"pron.","word":"anybody","meaning":"任何人"},{"date":"9/18","type":"word","pos":"adv.","word":"anymore","meaning":"再也（不）"},{"date":"9/18","type":"phrase","pos":"片語","word":"appeal to","meaning":"吸引；呼籲"},{"date":"9/18","type":"phrase","pos":"片語","word":"apply for","meaning":"申請"},{"date":"9/18","type":"phrase","pos":"片語","word":"apply to","meaning":"適用於"},
+      {"date":"9/21","type":"word","pos":"pron.","word":"anyone","meaning":"任何人"},{"date":"9/21","type":"word","pos":"pron.","word":"anything","meaning":"任何事"},{"date":"9/21","type":"word","pos":"adv.","word":"anyway","meaning":"無論如何"},{"date":"9/21","type":"word","pos":"adv.","word":"anywhere","meaning":"任何地方"},{"date":"9/21","type":"word","pos":"n.","word":"apartment","meaning":"公寓"},{"date":"9/21","type":"phrase","pos":"片語","word":"approve of","meaning":"贊成"},{"date":"9/21","type":"phrase","pos":"片語","word":"argue with","meaning":"與……爭論"},{"date":"9/21","type":"phrase","pos":"片語","word":"arm in arm","meaning":"手臂挽著手臂"},
+      {"date":"9/22","type":"word","pos":"v.","word":"apologize","meaning":"道歉"},{"date":"9/22","type":"word","pos":"v.","word":"appear","meaning":"出現；似乎"},{"date":"9/22","type":"word","pos":"n.","word":"apple","meaning":"蘋果"},{"date":"9/22","type":"word","pos":"v.","word":"apply","meaning":"申請；應用"},{"date":"9/22","type":"word","pos":"v.","word":"appreciate","meaning":"感激；欣賞"},{"date":"9/22","type":"phrase","pos":"片語","word":"around the corner","meaning":"即將來臨；在拐角處"},{"date":"9/22","type":"phrase","pos":"片語","word":"arrive at","meaning":"到達（小地點）"},{"date":"9/22","type":"phrase","pos":"片語","word":"arrive in","meaning":"到達（大城市/國家）"},
+      {"date":"9/23","type":"word","pos":"n.","word":"area","meaning":"區域"},{"date":"9/23","type":"word","pos":"v.","word":"argue","meaning":"爭論"},{"date":"9/23","type":"word","pos":"n.","word":"arm","meaning":"手臂"},{"date":"9/23","type":"word","pos":"n.","word":"army","meaning":"軍隊"},{"date":"9/23","type":"word","pos":"prep./adv.","word":"around","meaning":"周圍；大約"},{"date":"9/23","type":"phrase","pos":"片語","word":"as a matter of fact","meaning":"事實上"},{"date":"9/23","type":"phrase","pos":"片語","word":"as a result","meaning":"結果；因此"},{"date":"9/23","type":"phrase","pos":"片語","word":"as far as","meaning":"就……而言"},
+      {"date":"9/24","type":"word","pos":"v.","word":"arrange","meaning":"安排"},{"date":"9/24","type":"word","pos":"v./n.","word":"arrest","meaning":"逮捕"},{"date":"9/24","type":"word","pos":"v.","word":"arrive","meaning":"到達"},{"date":"9/24","type":"word","pos":"n.","word":"art","meaning":"藝術"},{"date":"9/24","type":"word","pos":"n.","word":"article","meaning":"文章"},{"date":"9/24","type":"phrase","pos":"片語","word":"as for","meaning":"至於"},{"date":"9/24","type":"phrase","pos":"片語","word":"as if","meaning":"彷彿；好像"},{"date":"9/24","type":"phrase","pos":"片語","word":"as long as","meaning":"只要"},
+      {"date":"9/29","type":"word","pos":"n.","word":"artist","meaning":"藝術家"},{"date":"9/29","type":"word","pos":"prep./conj.","word":"as","meaning":"作為；當……時"},{"date":"9/29","type":"word","pos":"adj.","word":"ashamed","meaning":"羞愧的"},{"date":"9/29","type":"word","pos":"v.","word":"ask","meaning":"詢問；要求"},{"date":"9/29","type":"word","pos":"adj.","word":"asleep","meaning":"睡著的"},{"date":"9/29","type":"phrase","pos":"片語","word":"as soon as","meaning":"一……就……"},{"date":"9/29","type":"phrase","pos":"片語","word":"as well","meaning":"也"},{"date":"9/29","type":"phrase","pos":"片語","word":"as well as","meaning":"以及；和"},
+      {"date":"9/30","type":"word","pos":"n.","word":"assistant","meaning":"助手"},{"date":"9/30","type":"word","pos":"v.","word":"assume","meaning":"假設；認為"},{"date":"9/30","type":"word","pos":"v./n.","word":"attack","meaning":"攻擊"},{"date":"9/30","type":"word","pos":"v.","word":"attend","meaning":"參加"},{"date":"9/30","type":"word","pos":"n.","word":"attention","meaning":"注意力"},{"date":"9/30","type":"phrase","pos":"片語","word":"ask for","meaning":"要求；索取"},{"date":"9/30","type":"phrase","pos":"片語","word":"at a loss","meaning":"茫然不知所措"},{"date":"9/30","type":"phrase","pos":"片語","word":"at all","meaning":"根本；一點也"},
+      {"date":"10/1","type":"word","pos":"n.","word":"attitude","meaning":"態度"},{"date":"10/1","type":"word","pos":"v.","word":"attract","meaning":"吸引"},{"date":"10/1","type":"word","pos":"n.","word":"audience","meaning":"觀眾"},{"date":"10/1","type":"word","pos":"n.","word":"aunt","meaning":"姑姑；阿姨"},{"date":"10/1","type":"word","pos":"n.","word":"author","meaning":"作者"},{"date":"10/1","type":"phrase","pos":"片語","word":"at all costs","meaning":"不惜任何代價"},{"date":"10/1","type":"phrase","pos":"片語","word":"at best","meaning":"充其量"},{"date":"10/1","type":"phrase","pos":"片語","word":"at first","meaning":"起初"},
+      {"date":"10/2","type":"word","pos":"n.","word":"autumn","meaning":"秋天"},{"date":"10/2","type":"word","pos":"adj.","word":"available","meaning":"可得到的；有空的"},{"date":"10/2","type":"word","pos":"adj./n.","word":"average","meaning":"平均的"},{"date":"10/2","type":"word","pos":"v.","word":"avoid","meaning":"避免"},{"date":"10/2","type":"word","pos":"n./v.","word":"award","meaning":"獎項；頒發"},{"date":"10/2","type":"phrase","pos":"片語","word":"at hand","meaning":"在手邊；即將到來"},{"date":"10/2","type":"phrase","pos":"片語","word":"at home","meaning":"在家；自在"},{"date":"10/2","type":"phrase","pos":"片語","word":"at last","meaning":"終於"},
+      {"date":"10/5","type":"word","pos":"n.","word":"baby","meaning":"嬰兒"},{"date":"10/5","type":"word","pos":"v.","word":"baby-sit","meaning":"托兒照顧"},{"date":"10/5","type":"word","pos":"adv./n.","word":"back","meaning":"背部；返回"},{"date":"10/5","type":"word","pos":"n.","word":"background","meaning":"背景"},{"date":"10/5","type":"word","pos":"adv.","word":"backward","meaning":"向後地"},{"date":"10/5","type":"phrase","pos":"片語","word":"at least","meaning":"至少"},{"date":"10/5","type":"phrase","pos":"片語","word":"at most","meaning":"至多"},{"date":"10/5","type":"phrase","pos":"片語","word":"at night","meaning":"在晚上"},
+
+      // 10/6 及之後進度
+      {"date":"10/6","type":"word","pos":"n.","word":"bacon","meaning":"培根"},{"date":"10/6","type":"word","pos":"adj.","word":"bad","meaning":"壞的"},{"date":"10/6","type":"word","pos":"n.","word":"badminton","meaning":"羽毛球"},{"date":"10/6","type":"word","pos":"n.","word":"bag","meaning":"袋子"},{"date":"10/6","type":"word","pos":"v.","word":"bake","meaning":"烘烤"},{"date":"10/6","type":"phrase","pos":"片語","word":"at once","meaning":"立刻"},{"date":"10/6","type":"phrase","pos":"片語","word":"at present","meaning":"目前"},{"date":"10/6","type":"phrase","pos":"片語","word":"at random","meaning":"隨機地"},
+      {"date":"10/7","type":"word","pos":"n.","word":"bakery","meaning":"麵包店"},{"date":"10/7","type":"word","pos":"n.","word":"balcony","meaning":"陽台"},{"date":"10/7","type":"word","pos":"n.","word":"ball","meaning":"球；舞會"},{"date":"10/7","type":"word","pos":"n.","word":"balloon","meaning":"氣球"},{"date":"10/7","type":"word","pos":"n.","word":"banana","meaning":"香蕉"},{"date":"10/7","type":"phrase","pos":"片語","word":"at risk","meaning":"處於危險中"},{"date":"10/7","type":"phrase","pos":"片語","word":"at the age of","meaning":"在……歲時"},{"date":"10/7","type":"phrase","pos":"片語","word":"at the end of","meaning":"在……盡頭/末端"},
+      {"date":"10/8","type":"word","pos":"n.","word":"band","meaning":"樂團；帶子"},{"date":"10/8","type":"word","pos":"n.","word":"bank","meaning":"銀行；岸邊"},{"date":"10/8","type":"word","pos":"n.","word":"bar","meaning":"酒吧；條狀物"},{"date":"10/8","type":"word","pos":"n./v.","word":"barbecue","meaning":"烤肉"},{"date":"10/8","type":"word","pos":"n./v.","word":"bargain","meaning":"討價還價；便宜貨"},{"date":"10/8","type":"phrase","pos":"片語","word":"at the moment","meaning":"此刻"},{"date":"10/8","type":"phrase","pos":"片語","word":"at the same time","meaning":"同時"},{"date":"10/8","type":"phrase","pos":"片語","word":"at times","meaning":"偶爾；有時"},
+      {"date":"10/12","type":"word","pos":"v./n.","word":"bark","meaning":"狗吠；樹皮"},{"date":"10/12","type":"word","pos":"n./v.","word":"base","meaning":"基礎；基底"},{"date":"10/12","type":"word","pos":"n.","word":"baseball","meaning":"棒球"},{"date":"10/12","type":"word","pos":"n.","word":"basement","meaning":"地下室"},{"date":"10/12","type":"word","pos":"adj.","word":"basic","meaning":"基礎的"},{"date":"10/12","type":"phrase","pos":"片語","word":"back and forth","meaning":"來回地"},{"date":"10/12","type":"phrase","pos":"片語","word":"bark at","meaning":"對……咆哮"},{"date":"10/12","type":"phrase","pos":"片語","word":"base on","meaning":"以……為基礎"},
+      {"date":"10/13","type":"word","pos":"n.","word":"basket","meaning":"籃子"},{"date":"10/13","type":"word","pos":"n.","word":"basketball","meaning":"籃球"},{"date":"10/13","type":"word","pos":"n.","word":"bat","meaning":"球棒；蝙蝠"},{"date":"10/13","type":"word","pos":"n.","word":"bath","meaning":"洗澡"},{"date":"10/13","type":"word","pos":"v.","word":"bathe","meaning":"洗澡"},{"date":"10/13","type":"phrase","pos":"片語","word":"be able to","meaning":"能夠"},{"date":"10/13","type":"phrase","pos":"片語","word":"be afraid of","meaning":"害怕……"},{"date":"10/13","type":"phrase","pos":"片語","word":"be angry with","meaning":"對……發脾氣"},
+      {"date":"10/14","type":"word","pos":"n.","word":"bathroom","meaning":"浴室"},{"date":"10/14","type":"word","pos":"n.","word":"battery","meaning":"電池"},{"date":"10/14","type":"word","pos":"n.","word":"beach","meaning":"海灘"},{"date":"10/14","type":"word","pos":"n.","word":"bean","meaning":"豆類"},{"date":"10/14","type":"word","pos":"n./v.","word":"bear","meaning":"熊；承受"},{"date":"10/14","type":"phrase","pos":"片語","word":"be aware of","meaning":"察覺到"},{"date":"10/14","type":"phrase","pos":"片語","word":"be bad at","meaning":"不擅長"},{"date":"10/14","type":"phrase","pos":"片語","word":"be based on","meaning":"根據……"},
+      {"date":"10/15","type":"word","pos":"n.","word":"beard","meaning":"鬍鬚"},{"date":"10/15","type":"word","pos":"v./n.","word":"beat","meaning":"擊打；心跳"},{"date":"10/15","type":"word","pos":"adj.","word":"beautiful","meaning":"美麗的"},{"date":"10/15","type":"word","pos":"n.","word":"beauty","meaning":"美麗；美人"},{"date":"10/15","type":"word","pos":"conj.","word":"because","meaning":"因為"},{"date":"10/15","type":"phrase","pos":"片語","word":"be bound to","meaning":"必然會"},{"date":"10/15","type":"phrase","pos":"片語","word":"be busy with","meaning":"忙於……"},{"date":"10/15","type":"phrase","pos":"片語","word":"be capable of","meaning":"有能力做……"},
+      {"date":"10/16","type":"word","pos":"v.","word":"become","meaning":"變成"},{"date":"10/16","type":"word","pos":"n.","word":"bed","meaning":"床"},{"date":"10/16","type":"word","pos":"n.","word":"bedroom","meaning":"臥室"},{"date":"10/16","type":"word","pos":"n.","word":"bee","meaning":"蜜蜂"},{"date":"10/16","type":"word","pos":"n.","word":"beef","meaning":"牛肉"},{"date":"10/16","type":"phrase","pos":"片語","word":"be careful of","meaning":"小心……"},{"date":"10/16","type":"phrase","pos":"片語","word":"be crazy about","meaning":"對……著迷"},{"date":"10/16","type":"phrase","pos":"片語","word":"be crowded with","meaning":"擠滿……"},
+      {"date":"10/19","type":"word","pos":"n.","word":"beer","meaning":"啤酒"},{"date":"10/19","type":"word","pos":"prep./conj.","word":"before","meaning":"在……之前"},{"date":"10/19","type":"word","pos":"v.","word":"beg","meaning":"乞求"},{"date":"10/19","type":"word","pos":"v.","word":"begin","meaning":"開始"},{"date":"10/19","type":"word","pos":"n.","word":"beginner","meaning":"初學者"},{"date":"10/19","type":"phrase","pos":"片語","word":"be different from","meaning":"與……不同"},{"date":"10/19","type":"phrase","pos":"片語","word":"be eager to","meaning":"急切想做……"},{"date":"10/19","type":"phrase","pos":"片語","word":"be familiar with","meaning":"熟悉……"},
+      {"date":"10/20","type":"word","pos":"n.","word":"behavior","meaning":"行為"},{"date":"10/20","type":"word","pos":"prep./adv.","word":"behind","meaning":"在……後面"},{"date":"10/20","type":"word","pos":"v.","word":"believe","meaning":"相信"},{"date":"10/20","type":"word","pos":"n.","word":"bell","meaning":"鈴；鐘"},{"date":"10/20","type":"word","pos":"v.","word":"belong","meaning":"屬於"},{"date":"10/20","type":"phrase","pos":"片語","word":"be famous for","meaning":"以……而聞名"},{"date":"10/20","type":"phrase","pos":"片語","word":"be fond of","meaning":"喜歡"},{"date":"10/20","type":"phrase","pos":"片語","word":"be full of","meaning":"充滿……"},
+      {"date":"10/21","type":"word","pos":"prep./adv.","word":"below","meaning":"在……下方"},{"date":"10/21","type":"word","pos":"n.","word":"belt","meaning":"皮帶"},{"date":"10/21","type":"word","pos":"n.","word":"bench","meaning":"長椅"},{"date":"10/21","type":"word","pos":"prep.","word":"beside","meaning":"在……旁邊"},{"date":"10/21","type":"word","pos":"adv./prep.","word":"besides","meaning":"此外"},{"date":"10/21","type":"phrase","pos":"片語","word":"be good at","meaning":"擅長……"},{"date":"10/21","type":"phrase","pos":"片語","word":"be good for","meaning":"對……有益"},{"date":"10/21","type":"phrase","pos":"片語","word":"be in charge of","meaning":"負責"},
+      {"date":"10/21","type":"word","pos":"adj./adv.","word":"best","meaning":"最好的"},{"date":"10/21","type":"word","pos":"adj./adv.","word":"better","meaning":"更好的"},{"date":"10/21","type":"word","pos":"prep.","word":"between","meaning":"在……之間"},{"date":"10/21","type":"word","pos":"prep.","word":"beyond","meaning":"超過"},{"date":"10/21","type":"word","pos":"n.","word":"bicycle","meaning":"腳踏車"},{"date":"10/21","type":"phrase","pos":"片語","word":"be interested in","meaning":"對……感興趣"},{"date":"10/21","type":"phrase","pos":"片語","word":"be known as","meaning":"作為……而出名"},{"date":"10/21","type":"phrase","pos":"片語","word":"be known for","meaning":"因……而出名"},
+      {"date":"10/22","type":"word","pos":"adj.","word":"big","meaning":"大的"},{"date":"10/22","type":"word","pos":"n.","word":"bill","meaning":"帳單；鈔票"},{"date":"10/22","type":"word","pos":"n.","word":"biology","meaning":"生物學"},{"date":"10/22","type":"word","pos":"n.","word":"bird","meaning":"鳥"},{"date":"10/22","type":"word","pos":"n.","word":"birthday","meaning":"生日"},{"date":"10/22","type":"phrase","pos":"片語","word":"be late for","meaning":"……遲到"},{"date":"10/22","type":"phrase","pos":"片語","word":"be made of","meaning":"由……製成（看得出原料）"},{"date":"10/22","type":"phrase","pos":"片語","word":"be made from","meaning":"由……製成（看不出原料）"},
+      {"date":"10/23","type":"word","pos":"n.","word":"biscuit","meaning":"餅乾"},{"date":"10/23","type":"word","pos":"v./n.","word":"bite","meaning":"咬"},{"date":"10/23","type":"word","pos":"adj.","word":"bitter","meaning":"苦的"},{"date":"10/23","type":"word","pos":"adj./n.","word":"black","meaning":"黑色的"},{"date":"10/23","type":"word","pos":"n.","word":"blackboard","meaning":"黑板"},{"date":"10/23","type":"phrase","pos":"片語","word":"be proud of","meaning":"以……為榮"},{"date":"10/23","type":"phrase","pos":"片語","word":"be ready for","meaning":"為……做好準備"},{"date":"10/23","type":"phrase","pos":"片語","word":"be responsible for","meaning":"對……負責"},
+      {"date":"10/26","type":"word","pos":"v./n.","word":"blame","meaning":"責怪"},{"date":"10/26","type":"word","pos":"adj./n.","word":"blank","meaning":"空白處"},{"date":"10/26","type":"word","pos":"n.","word":"blanket","meaning":"毛毯"},{"date":"10/26","type":"word","pos":"adj.","word":"blind","meaning":"瞎的"},{"date":"10/26","type":"word","pos":"n./v.","word":"block","meaning":"街區；阻擋"},{"date":"10/26","type":"phrase","pos":"片語","word":"be satisfied with","meaning":"對……感到滿意"},{"date":"10/26","type":"phrase","pos":"片語","word":"be similar to","meaning":"與……相似"},{"date":"10/26","type":"phrase","pos":"片語","word":"be strict with","meaning":"對……嚴格"},
+      {"date":"10/27","type":"word","pos":"n.","word":"blood","meaning":"血液"},{"date":"10/27","type":"word","pos":"n.","word":"blouse","meaning":"女用襯衫"},{"date":"10/27","type":"word","pos":"v.","word":"blow","meaning":"吹"},{"date":"10/27","type":"word","pos":"adj./n.","word":"blue","meaning":"藍色的"},{"date":"10/27","type":"word","pos":"n./v.","word":"board","meaning":"板子；登機"},{"date":"10/27","type":"phrase","pos":"片語","word":"be supposed to","meaning":"應該……"},{"date":"10/27","type":"phrase","pos":"片語","word":"be surprised at","meaning":"對……感到驚訝"},{"date":"10/27","type":"phrase","pos":"片語","word":"be used to","meaning":"習慣於……"},
+      {"date":"10/28","type":"word","pos":"n.","word":"boat","meaning":"船"},{"date":"10/28","type":"word","pos":"n.","word":"body","meaning":"身體"},{"date":"10/28","type":"word","pos":"v.","word":"boil","meaning":"煮沸"},{"date":"10/28","type":"word","pos":"n./v.","word":"bomb","meaning":"炸彈"},{"date":"10/28","type":"word","pos":"n.","word":"bone","meaning":"骨頭"},{"date":"10/28","type":"phrase","pos":"片語","word":"be worried about","meaning":"擔心……"},{"date":"10/28","type":"phrase","pos":"片語","word":"because of","meaning":"因為（接名詞）"},{"date":"10/28","type":"phrase","pos":"片語","word":"before long","meaning":"不久之後"},
+      {"date":"10/29","type":"word","pos":"n./v.","word":"book","meaning":"書本；預訂"},{"date":"10/29","type":"word","pos":"n.","word":"bookstore","meaning":"書店"},{"date":"10/29","type":"word","pos":"n.","word":"boot","meaning":"靴子"},{"date":"10/29","type":"word","pos":"adj.","word":"bored","meaning":"無聊的"},{"date":"10/29","type":"word","pos":"adj.","word":"boring","meaning":"令人無聊的"},{"date":"10/29","type":"phrase","pos":"片語","word":"belong to","meaning":"屬於"},{"date":"10/29","type":"phrase","pos":"片語","word":"benefit from","meaning":"從……獲益"},{"date":"10/29","type":"phrase","pos":"片語","word":"blow out","meaning":"吹熄"},
+      {"date":"10/30","type":"word","pos":"adj.","word":"born","meaning":"出生的"},{"date":"10/30","type":"word","pos":"v.","word":"borrow","meaning":"借入"},{"date":"10/30","type":"word","pos":"n.","word":"boss","meaning":"老闆"},{"date":"10/30","type":"word","pos":"pron./adj.","word":"both","meaning":"兩者都"},{"date":"10/30","type":"word","pos":"v.","word":"bother","meaning":"打擾"},{"date":"10/30","type":"phrase","pos":"片語","word":"blow up","meaning":"爆炸"},{"date":"10/30","type":"phrase","pos":"片語","word":"both...and...","meaning":"兩者都……"},{"date":"10/30","type":"phrase","pos":"片語","word":"break down","meaning":"故障；崩潰"},
+      {"date":"11/2","type":"word","pos":"n.","word":"bottle","meaning":"瓶子"},{"date":"11/2","type":"word","pos":"n.","word":"bottom","meaning":"底部"},{"date":"11/2","type":"word","pos":"v./n.","word":"bow","meaning":"鞠躬；弓"},{"date":"11/2","type":"word","pos":"n.","word":"bowl","meaning":"碗"},{"date":"11/2","type":"word","pos":"n.","word":"bowling","meaning":"保齡球"},{"date":"11/2","type":"phrase","pos":"片語","word":"break in","meaning":"闖入"},{"date":"11/2","type":"phrase","pos":"片語","word":"break out","meaning":"爆發（疾病/戰爭）"},{"date":"11/2","type":"phrase","pos":"片語","word":"break up","meaning":"分手；破碎"},
+      {"date":"11/3","type":"word","pos":"n.","word":"box","meaning":"盒子"},{"date":"11/3","type":"word","pos":"n.","word":"boy","meaning":"男孩"},{"date":"11/3","type":"word","pos":"n.","word":"brain","meaning":"大腦"},{"date":"11/3","type":"word","pos":"n.","word":"branch","meaning":"樹枝；分公司"},{"date":"11/3","type":"word","pos":"n.","word":"brand","meaning":"品牌"},{"date":"11/3","type":"phrase","pos":"片語","word":"bring about","meaning":"引起；導致"},{"date":"11/3","type":"phrase","pos":"片語","word":"bring up","meaning":"撫養長大；提出"},{"date":"11/3","type":"phrase","pos":"片語","word":"burn down","meaning":"燒毀"},
+      {"date":"11/4","type":"word","pos":"adj.","word":"brave","meaning":"勇敢的"},{"date":"11/4","type":"word","pos":"n.","word":"bread","meaning":"麵包"},{"date":"11/4","type":"word","pos":"v./n.","word":"break","meaning":"打碎；休息"},{"date":"11/4","type":"word","pos":"n.","word":"breakfast","meaning":"早餐"},{"date":"11/4","type":"word","pos":"n.","word":"breath","meaning":"呼吸"},{"date":"11/4","type":"phrase","pos":"片語","word":"burn out","meaning":"累垮；燒光"},{"date":"11/4","type":"phrase","pos":"片語","word":"by accident","meaning":"偶然地"},{"date":"11/4","type":"phrase","pos":"片語","word":"by all means","meaning":"務必；一定"},
+      {"date":"11/5","type":"word","pos":"v.","word":"breathe","meaning":"呼吸"},{"date":"11/5","type":"word","pos":"n.","word":"brick","meaning":"磚頭"},{"date":"11/5","type":"word","pos":"n.","word":"bridge","meaning":"橋樑"},{"date":"11/5","type":"word","pos":"adj.","word":"bright","meaning":"明亮的"},{"date":"11/5","type":"word","pos":"adj.","word":"brilliant","meaning":"傑出的"},{"date":"11/5","type":"phrase","pos":"片語","word":"by chance","meaning":"巧合地"},{"date":"11/5","type":"phrase","pos":"片語","word":"by far","meaning":"顯然地；至極"},{"date":"11/5","type":"phrase","pos":"片語","word":"by means of","meaning":"藉由"},
+      {"date":"11/6","type":"word","pos":"v.","word":"bring","meaning":"帶來"},{"date":"11/6","type":"word","pos":"adj.","word":"broad","meaning":"寬廣的"},{"date":"11/6","type":"word","pos":"v./n.","word":"broadcast","meaning":"廣播"},{"date":"11/6","type":"word","pos":"n.","word":"brother","meaning":"兄弟"},{"date":"11/6","type":"word","pos":"adj./n.","word":"brown","meaning":"棕色的"},{"date":"11/6","type":"phrase","pos":"片語","word":"by mistake","meaning":"錯誤地"},{"date":"11/6","type":"phrase","pos":"片語","word":"by no means","meaning":"絕不"},{"date":"11/6","type":"phrase","pos":"片語","word":"by the time","meaning":"到……時候"},
+      {"date":"11/9","type":"word","pos":"n./v.","word":"brush","meaning":"刷子；刷"},{"date":"11/9","type":"word","pos":"n.","word":"bucket","meaning":"水桶"},{"date":"11/9","type":"word","pos":"n.","word":"buffet","meaning":"自助餐"},{"date":"11/9","type":"word","pos":"n.","word":"bug","meaning":"昆蟲"},{"date":"11/9","type":"word","pos":"v.","word":"build","meaning":"建造"},{"date":"11/9","type":"phrase","pos":"片語","word":"by the way","meaning":"順便一提"},{"date":"11/9","type":"phrase","pos":"片語","word":"call for","meaning":"需要；呼籲"},{"date":"11/9","type":"phrase","pos":"片語","word":"call off","meaning":"取消"},
+      {"date":"11/10","type":"word","pos":"n.","word":"building","meaning":"建築物"},{"date":"11/10","type":"word","pos":"n.","word":"bull","meaning":"公牛"},{"date":"11/10","type":"word","pos":"n.","word":"bun","meaning":"小圓麵包"},{"date":"11/10","type":"word","pos":"n./v.","word":"burden","meaning":"負擔"},{"date":"11/10","type":"word","pos":"n.","word":"burger","meaning":"漢堡"},{"date":"11/10","type":"phrase","pos":"片語","word":"call on","meaning":"拜訪"},{"date":"11/10","type":"phrase","pos":"片語","word":"care for","meaning":"照顧；關心"},{"date":"11/10","type":"phrase","pos":"片語","word":"carry on","meaning":"繼續進行"},
+      {"date":"11/11","type":"word","pos":"v.","word":"burn","meaning":"燃燒"},{"date":"11/11","type":"word","pos":"v.","word":"burst","meaning":"爆裂"},{"date":"11/11","type":"word","pos":"n.","word":"bus","meaning":"公車"},{"date":"11/11","type":"word","pos":"n.","word":"bush","meaning":"灌木"},{"date":"11/11","type":"word","pos":"n.","word":"business","meaning":"商業；生意"},{"date":"11/11","type":"phrase","pos":"片語","word":"carry out","meaning":"執行；實施"},{"date":"11/11","type":"phrase","pos":"片語","word":"catch a cold","meaning":"感冒"},{"date":"11/11","type":"phrase","pos":"片語","word":"catch fire","meaning":"著火"},
+      {"date":"11/12","type":"word","pos":"n.","word":"businessman","meaning":"商人"},{"date":"11/12","type":"word","pos":"adj.","word":"busy","meaning":"忙碌的"},{"date":"11/12","type":"word","pos":"conj.","word":"but","meaning":"但是"},{"date":"11/12","type":"word","pos":"n.","word":"butter","meaning":"奶油"},{"date":"11/12","type":"word","pos":"n.","word":"butterfly","meaning":"蝴蝶"},{"date":"11/12","type":"phrase","pos":"片語","word":"catch up with","meaning":"趕上"},{"date":"11/12","type":"phrase","pos":"片語","word":"change one's mind","meaning":"改變心意"},{"date":"11/12","type":"phrase","pos":"片語","word":"check in","meaning":"辦理入住/報到"},
+      {"date":"11/13","type":"word","pos":"n.","word":"button","meaning":"鈕扣；按鈕"},{"date":"11/13","type":"word","pos":"v.","word":"buy","meaning":"購買"},{"date":"11/13","type":"word","pos":"prep.","word":"by","meaning":"被；在……旁邊"},{"date":"11/13","type":"word","pos":"n.","word":"cabbage","meaning":"包心菜"},{"date":"11/13","type":"word","pos":"n.","word":"cable","meaning":"電纜"},{"date":"11/13","type":"phrase","pos":"片語","word":"check out","meaning":"退房；檢查"},{"date":"11/13","type":"phrase","pos":"片語","word":"cheer up","meaning":"振作起來"},{"date":"11/13","type":"phrase","pos":"片語","word":"clean up","meaning":"打掃乾淨"},
+      {"date":"11/16","type":"word","pos":"n.","word":"cage","meaning":"籠子"},{"date":"11/16","type":"word","pos":"n.","word":"cake","meaning":"蛋糕"},{"date":"11/16","type":"word","pos":"n.","word":"calculator","meaning":"計算機"},{"date":"11/16","type":"word","pos":"n.","word":"calendar","meaning":"日曆"},{"date":"11/16","type":"word","pos":"v./n.","word":"call","meaning":"打電話；呼喚"},{"date":"11/16","type":"phrase","pos":"片語","word":"clear up","meaning":"放晴；清理"},{"date":"11/16","type":"phrase","pos":"片語","word":"close down","meaning":"倒閉；關閉"},{"date":"11/16","type":"phrase","pos":"片語","word":"come across","meaning":"偶然遇見"},
+      {"date":"11/17","type":"word","pos":"adj./v.","word":"calm","meaning":"冷靜的"},{"date":"11/17","type":"word","pos":"n.","word":"camel","meaning":"駱駝"},{"date":"11/17","type":"word","pos":"n.","word":"camera","meaning":"相機"},{"date":"11/17","type":"word","pos":"v./n.","word":"camp","meaning":"露營"},{"date":"11/17","type":"word","pos":"n.","word":"campaign","meaning":"活動；競選"},{"date":"11/17","type":"phrase","pos":"片語","word":"come along","meaning":"一起來；進展"},{"date":"11/17","type":"phrase","pos":"片語","word":"come true","meaning":"實現"},{"date":"11/17","type":"phrase","pos":"片語","word":"come up with","meaning":"想出（主意）"},
+      {"date":"11/18","type":"word","pos":"aux./n.","word":"can","meaning":"能；罐頭"},{"date":"11/18","type":"word","pos":"n.","word":"canal","meaning":"運河"},{"date":"11/18","type":"word","pos":"v.","word":"cancel","meaning":"取消"},{"date":"11/18","type":"word","pos":"n.","word":"cancer","meaning":"癌症"},{"date":"11/18","type":"word","pos":"n.","word":"candidate","meaning":"候選人"},{"date":"11/18","type":"phrase","pos":"片語","word":"compare to","meaning":"比喻為"},{"date":"11/18","type":"phrase","pos":"片語","word":"compare with","meaning":"與……比較"},{"date":"11/18","type":"phrase","pos":"片語","word":"complain about","meaning":"抱怨……"},
+      {"date":"11/19","type":"word","pos":"n.","word":"candle","meaning":"蠟燭"},{"date":"11/19","type":"word","pos":"n.","word":"candy","meaning":"糖果"},{"date":"11/19","type":"word","pos":"n.","word":"cap","meaning":"便帽；蓋子"},{"date":"11/19","type":"word","pos":"adj.","word":"capable","meaning":"有能力的"},{"date":"11/19","type":"word","pos":"n.","word":"capacity","meaning":"容量；能力"},{"date":"11/19","type":"phrase","pos":"片語","word":"concentrate on","meaning":"專心於"},{"date":"11/19","type":"phrase","pos":"片語","word":"consist of","meaning":"由……組成"},{"date":"11/19","type":"phrase","pos":"片語","word":"cope with","meaning":"應付；處理"},
+      {"date":"11/20","type":"word","pos":"n.","word":"capital","meaning":"首都；資本"},{"date":"11/20","type":"word","pos":"n.","word":"captain","meaning":"隊長；船長"},{"date":"11/20","type":"word","pos":"n.","word":"car","meaning":"汽車"},{"date":"11/20","type":"word","pos":"n.","word":"card","meaning":"卡片"},{"date":"11/20","type":"word","pos":"v./n.","word":"care","meaning":"關心；照顧"},{"date":"11/20","type":"phrase","pos":"片語","word":"count on","meaning":"依靠；指望"},{"date":"11/20","type":"phrase","pos":"片語","word":"cover up","meaning":"掩蓋"},{"date":"11/20","type":"phrase","pos":"片語","word":"cross out","meaning":"劃掉"},
+      {"date":"11/23","type":"word","pos":"adj.","word":"careful","meaning":"小心的"},{"date":"11/23","type":"word","pos":"adj.","word":"careless","meaning":"粗心的"},{"date":"11/23","type":"word","pos":"n.","word":"carpet","meaning":"地毯"},{"date":"11/23","type":"word","pos":"n.","word":"carrot","meaning":"胡蘿蔔"},{"date":"11/23","type":"word","pos":"v.","word":"carry","meaning":"攜帶"},{"date":"11/23","type":"phrase","pos":"片語","word":"cut down on","meaning":"減少……的開支/用量"},{"date":"11/23","type":"phrase","pos":"片語","word":"cut off","meaning":"切斷；隔絕"},{"date":"11/23","type":"phrase","pos":"片語","word":"cut out","meaning":"剪下；停止"},
+      {"date":"11/24","type":"word","pos":"n.","word":"cart","meaning":"手推車"},{"date":"11/24","type":"word","pos":"n.","word":"cartoon","meaning":"卡通"},{"date":"11/24","type":"word","pos":"n.","word":"case","meaning":"案件；情況；盒"},{"date":"11/24","type":"word","pos":"n./v.","word":"cash","meaning":"現金"},{"date":"11/24","type":"word","pos":"n.","word":"cashier","meaning":"收銀員"},{"date":"11/24","type":"phrase","pos":"片語","word":"date back to","meaning":"追溯至"},{"date":"11/24","type":"phrase","pos":"片語","word":"day and night","meaning":"日夜"},{"date":"11/24","type":"phrase","pos":"片語","word":"day after day","meaning":"日復一日"},
+      {"date":"11/25","type":"word","pos":"n.","word":"castle","meaning":"城堡"},{"date":"11/25","type":"word","pos":"n.","word":"cat","meaning":"貓"},{"date":"11/25","type":"word","pos":"v.","word":"catch","meaning":"抓住；接住"},{"date":"11/25","type":"word","pos":"v./n.","word":"cause","meaning":"導致；原因"},{"date":"11/25","type":"word","pos":"n.","word":"ceiling","meaning":"天花板"},{"date":"11/25","type":"phrase","pos":"片語","word":"deal with","meaning":"處理；應付"},{"date":"11/25","type":"phrase","pos":"片語","word":"depend on","meaning":"依賴；取決於"},{"date":"11/25","type":"phrase","pos":"片語","word":"die of","meaning":"死於（疾病）"},
+      {"date":"11/26","type":"word","pos":"v.","word":"celebrate","meaning":"慶祝"},{"date":"11/26","type":"word","pos":"n.","word":"cell","meaning":"細胞；單元"},{"date":"11/26","type":"word","pos":"n.","word":"cellphone","meaning":"手機"},{"date":"11/26","type":"word","pos":"n.","word":"cent","meaning":"分（貨幣單位）"},{"date":"11/26","type":"word","pos":"n.","word":"center","meaning":"中心"},{"date":"11/26","type":"phrase","pos":"片語","word":"die out","meaning":"滅絕"},{"date":"11/26","type":"phrase","pos":"片語","word":"do one's best","meaning":"盡力而為"},{"date":"11/26","type":"phrase","pos":"片語","word":"do research","meaning":"做研究"},
+      {"date":"11/27","type":"word","pos":"adj.","word":"central","meaning":"中央的"},{"date":"11/27","type":"word","pos":"n.","word":"century","meaning":"世紀"},{"date":"11/27","type":"word","pos":"n.","word":"cereal","meaning":"麥片"},{"date":"11/27","type":"word","pos":"adj.","word":"certain","meaning":"確定的"},{"date":"11/27","type":"word","pos":"adv.","word":"certainly","meaning":"當然地"},{"date":"11/27","type":"phrase","pos":"片語","word":"do without","meaning":"沒有……也行"},{"date":"11/27","type":"phrase","pos":"片語","word":"door to door","meaning":"挨家挨戶"},{"date":"11/27","type":"phrase","pos":"片語","word":"dress up","meaning":"裝扮；穿上盛裝"},
+      {"date":"11/30","type":"word","pos":"n./v.","word":"chain","meaning":"鍊條；連鎖店"},{"date":"11/30","type":"word","pos":"n.","word":"chair","meaning":"椅子"},{"date":"11/30","type":"word","pos":"n.","word":"chalk","meaning":"粉筆"},{"date":"11/30","type":"word","pos":"n./v.","word":"challenge","meaning":"挑戰"},{"date":"11/30","type":"word","pos":"n.","word":"chance","meaning":"機會"},{"date":"11/30","type":"phrase","pos":"片語","word":"drop by","meaning":"順道造訪"},{"date":"11/30","type":"phrase","pos":"片語","word":"drop out","meaning":"退學；退出"},{"date":"11/30","type":"phrase","pos":"片語","word":"due to","meaning":"由於"},
+      {"date":"12/1","type":"word","pos":"v./n.","word":"change","meaning":"改變；零錢"},{"date":"12/1","type":"word","pos":"n.","word":"channel","meaning":"頻道"},{"date":"12/1","type":"word","pos":"n.","word":"character","meaning":"性格；角色"},{"date":"12/1","type":"word","pos":"v./n.","word":"charge","meaning":"充電；收費"},{"date":"12/1","type":"word","pos":"n.","word":"charity","meaning":"慈善機構"},{"date":"12/1","type":"phrase","pos":"片語","word":"each other","meaning":"彼此"},{"date":"12/1","type":"phrase","pos":"片語","word":"either...or...","meaning":"不是……就是……"},{"date":"12/1","type":"phrase","pos":"片語","word":"end up","meaning":"最終成為；結果"},
+      {"date":"12/2","type":"word","pos":"adj.","word":"charming","meaning":"迷人的"},{"date":"12/2","type":"word","pos":"n.","word":"chart","meaning":"圖表"},{"date":"12/2","type":"word","pos":"v./n.","word":"chase","meaning":"追逐"},{"date":"12/2","type":"word","pos":"adj.","word":"cheap","meaning":"便宜的"},{"date":"12/2","type":"word","pos":"v.","word":"cheat","meaning":"欺騙；作弊"},{"date":"12/2","type":"phrase","pos":"片語","word":"enjoy oneself","meaning":"玩得開心"},{"date":"12/2","type":"phrase","pos":"片語","word":"every now and then","meaning":"偶爾"},{"date":"12/2","type":"phrase","pos":"片語","word":"every other day","meaning":"每隔一天"},
+      {"date":"12/3","type":"word","pos":"v./n.","word":"check","meaning":"檢查；支票"},{"date":"12/3","type":"word","pos":"v./n.","word":"cheer","meaning":"歡呼；加油"},{"date":"12/3","type":"word","pos":"adj.","word":"cheerful","meaning":"開朗的"},{"date":"12/3","type":"word","pos":"n.","word":"cheese","meaning":"起司"},{"date":"12/3","type":"word","pos":"adj./n.","word":"chemical","meaning":"化學的"},{"date":"12/3","type":"phrase","pos":"片語","word":"face to face","meaning":"面對面"},{"date":"12/3","type":"phrase","pos":"片語","word":"fall asleep","meaning":"入睡"},{"date":"12/3","type":"phrase","pos":"片語","word":"fall behind","meaning":"落後"},
+      {"date":"12/4","type":"word","pos":"n.","word":"chemist","meaning":"化學家"},{"date":"12/4","type":"word","pos":"n.","word":"chemistry","meaning":"化學"},{"date":"12/4","type":"word","pos":"n.","word":"cherry","meaning":"櫻桃"},{"date":"12/4","type":"word","pos":"n.","word":"chess","meaning":"西洋棋"},{"date":"12/4","type":"word","pos":"n.","word":"chest","meaning":"胸膛；大箱子"},{"date":"12/4","type":"phrase","pos":"片語","word":"fall in love with","meaning":"愛上……"},{"date":"12/4","type":"phrase","pos":"片語","word":"far away","meaning":"遙遠地"},{"date":"12/4","type":"phrase","pos":"片語","word":"figure out","meaning":"想出；理解"},
+      {"date":"12/7","type":"word","pos":"n.","word":"chicken","meaning":"雞肉；小雞"},{"date":"12/7","type":"word","pos":"n./adj.","word":"chief","meaning":"首領；主要的"},{"date":"12/7","type":"word","pos":"n.","word":"child","meaning":"小孩"},{"date":"12/7","type":"word","pos":"n.","word":"childhood","meaning":"童年"},{"date":"12/7","type":"word","pos":"adj.","word":"chilly","meaning":"寒冷的"},{"date":"12/7","type":"phrase","pos":"片語","word":"fill in","meaning":"填寫（表格）"},{"date":"12/7","type":"phrase","pos":"片語","word":"fill out","meaning":"填寫（完整表格）"},{"date":"12/7","type":"phrase","pos":"片語","word":"find fault with","meaning":"挑剔……"},
+      {"date":"12/8","type":"word","pos":"n.","word":"chimney","meaning":"煙囪"},{"date":"12/8","type":"word","pos":"n.","word":"chin","meaning":"下巴"},{"date":"12/8","type":"word","pos":"n.","word":"china","meaning":"瓷器"},{"date":"12/8","type":"word","pos":"n.","word":"chocolate","meaning":"巧克力"},{"date":"12/8","type":"word","pos":"n.","word":"choice","meaning":"選擇"},{"date":"12/8","type":"phrase","pos":"片語","word":"find out","meaning":"找出；發現"},{"date":"12/8","type":"phrase","pos":"片語","word":"first of all","meaning":"首先"},{"date":"12/8","type":"phrase","pos":"片語","word":"focus on","meaning":"專注於"},
+      {"date":"12/9","type":"word","pos":"v.","word":"choose","meaning":"選擇"},{"date":"12/9","type":"word","pos":"n.","word":"chopsticks","meaning":"筷子"},{"date":"12/9","type":"word","pos":"n./v.","word":"circle","meaning":"圓圈；畫圈"},{"date":"12/9","type":"word","pos":"n.","word":"citizen","meaning":"公民"},{"date":"12/9","type":"word","pos":"n.","word":"city","meaning":"城市"},{"date":"12/9","type":"phrase","pos":"片語","word":"for example","meaning":"例如"},{"date":"12/9","type":"phrase","pos":"片語","word":"for free","meaning":"免費"},{"date":"12/9","type":"phrase","pos":"片語","word":"for good","meaning":"永久地"},
+      {"date":"12/10","type":"word","pos":"v./n.","word":"claim","meaning":"主張；宣稱"},{"date":"12/10","type":"word","pos":"v./n.","word":"clap","meaning":"鼓掌"},{"date":"12/10","type":"word","pos":"n.","word":"class","meaning":"班級；課堂"},{"date":"12/10","type":"word","pos":"adj./n.","word":"classic","meaning":"經典的"},{"date":"12/10","type":"word","pos":"n.","word":"classroom","meaning":"教室"},{"date":"12/10","type":"phrase","pos":"片語","word":"for instance","meaning":"例如"},{"date":"12/10","type":"phrase","pos":"片語","word":"for the sake of","meaning":"為了……的好處"},{"date":"12/10","type":"phrase","pos":"片語","word":"from door to door","meaning":"戶對戶"},
+      {"date":"12/11","type":"word","pos":"adj./v.","word":"clean","meaning":"乾淨的；打掃"},{"date":"12/11","type":"word","pos":"adj./v.","word":"clear","meaning":"清楚的；清除"},{"date":"12/11","type":"word","pos":"n.","word":"clerk","meaning":"店員"},{"date":"12/11","type":"word","pos":"adj.","word":"clever","meaning":"聰明的"},{"date":"12/11","type":"word","pos":"n.","word":"climate","meaning":"氣候"},{"date":"12/11","type":"phrase","pos":"片語","word":"from now on","meaning":"從現在開始"},{"date":"12/11","type":"phrase","pos":"片語","word":"from time to time","meaning":"偶爾"},{"date":"12/11","type":"phrase","pos":"片語","word":"get a cold","meaning":"感冒"},
+      {"date":"12/14","type":"word","pos":"v.","word":"climb","meaning":"爬"},{"date":"12/14","type":"word","pos":"n.","word":"clinic","meaning":"診所"},{"date":"12/14","type":"word","pos":"n.","word":"clock","meaning":"時鐘"},{"date":"12/14","type":"word","pos":"v./adj.","word":"close","meaning":"關閉；親密的"},{"date":"12/14","type":"word","pos":"n.","word":"closet","meaning":"衣櫥"},{"date":"12/14","type":"phrase","pos":"片語","word":"get along with","meaning":"與……相處融洽"},{"date":"12/14","type":"phrase","pos":"片語","word":"get away","meaning":"逃離"},{"date":"12/14","type":"phrase","pos":"片語","word":"get back","meaning":"返回"},
+      {"date":"12/15","type":"word","pos":"n.","word":"cloth","meaning":"布料"},{"date":"12/15","type":"word","pos":"n.","word":"clothes","meaning":"衣服"},{"date":"12/15","type":"word","pos":"n.","word":"clothing","meaning":"服飾"},{"date":"12/15","type":"word","pos":"n.","word":"cloud","meaning":"雲"},{"date":"12/15","type":"word","pos":"adj.","word":"cloudy","meaning":"多雲的"},{"date":"12/15","type":"phrase","pos":"片語","word":"get in touch with","meaning":"與……保持聯絡"},{"date":"12/15","type":"phrase","pos":"片語","word":"get lost","meaning":"迷路"},{"date":"12/15","type":"phrase","pos":"片語","word":"get married","meaning":"結婚"},
+      {"date":"12/16","type":"word","pos":"n.","word":"club","meaning":"社團；俱樂部"},{"date":"12/16","type":"word","pos":"n./v.","word":"coach","meaning":"教練"},{"date":"12/16","type":"word","pos":"n.","word":"coal","meaning":"煤炭"},{"date":"12/16","type":"word","pos":"n.","word":"coast","meaning":"海岸"},{"date":"12/16","type":"word","pos":"n.","word":"coat","meaning":"大衣"},{"date":"12/16","type":"phrase","pos":"片語","word":"get off","meaning":"下車"},{"date":"12/16","type":"phrase","pos":"片語","word":"get on","meaning":"上車"},{"date":"12/16","type":"phrase","pos":"片語","word":"get over","meaning":"克服；從（病）中恢復"},
+      {"date":"12/17","type":"word","pos":"n.","word":"cockroach","meaning":"蟑螂"},{"date":"12/17","type":"word","pos":"n.","word":"cocoa","meaning":"可可"},{"date":"12/17","type":"word","pos":"n.","word":"coffee","meaning":"咖啡"},{"date":"12/17","type":"word","pos":"n.","word":"coin","meaning":"硬幣"},{"date":"12/17","type":"word","pos":"adj./n.","word":"cold","meaning":"冷的；感冒"},{"date":"12/17","type":"phrase","pos":"片語","word":"get rid of","meaning":"擺脫"},{"date":"12/17","type":"phrase","pos":"片語","word":"get used to","meaning":"習慣於"},{"date":"12/17","type":"phrase","pos":"片語","word":"give away","meaning":"贈送；洩漏"},
+      {"date":"12/18","type":"word","pos":"v.","word":"collect","meaning":"收集"},{"date":"12/18","type":"word","pos":"n.","word":"collection","meaning":"收藏"},{"date":"12/18","type":"word","pos":"n.","word":"college","meaning":"大學/學院"},{"date":"12/18","type":"word","pos":"n./v.","word":"color","meaning":"顏色；著色"},{"date":"12/18","type":"word","pos":"adj.","word":"colorful","meaning":"多彩多姿的"},{"date":"12/18","type":"phrase","pos":"片語","word":"give in","meaning":"屈服；讓步"},{"date":"12/18","type":"phrase","pos":"片語","word":"give off","meaning":"散發（光/氣味）"},{"date":"12/18","type":"phrase","pos":"片語","word":"give up","meaning":"放棄"},
+      {"date":"12/21","type":"word","pos":"n./v.","word":"comb","meaning":"梳子；梳頭"},{"date":"12/21","type":"word","pos":"v.","word":"come","meaning":"來"},{"date":"12/21","type":"word","pos":"adj.","word":"comfortable","meaning":"舒適的"},{"date":"12/21","type":"word","pos":"n./adj.","word":"comic","meaning":"漫畫；滑稽的"},{"date":"12/21","type":"word","pos":"v./n.","word":"command","meaning":"命令"},{"date":"12/21","type":"phrase","pos":"片語","word":"go abroad","meaning":"出國"},{"date":"12/21","type":"phrase","pos":"片語","word":"go ahead","meaning":"進行；向前"},{"date":"12/21","type":"phrase","pos":"片語","word":"go off","meaning":"響起；爆炸"},
+      {"date":"12/22","type":"word","pos":"n./v.","word":"comment","meaning":"評論"},{"date":"12/22","type":"word","pos":"adj./n.","word":"commercial","meaning":"商業的；廣告"},{"date":"12/22","type":"word","pos":"v.","word":"commit","meaning":"承諾；犯（罪）"},{"date":"12/22","type":"word","pos":"adj.","word":"common","meaning":"常見的；共同的"},{"date":"12/22","type":"word","pos":"v.","word":"communicate","meaning":"溝通"},{"date":"12/22","type":"phrase","pos":"片語","word":"go on","meaning":"繼續"},{"date":"12/22","type":"phrase","pos":"片語","word":"go through","meaning":"經歷；通過"},{"date":"12/22","type":"phrase","pos":"片語","word":"grow up","meaning":"長大"},
+      {"date":"12/23","type":"word","pos":"n.","word":"community","meaning":"社區"},{"date":"12/23","type":"word","pos":"n.","word":"company","meaning":"公司；陪伴"},{"date":"12/23","type":"word","pos":"v.","word":"compare","meaning":"比較"},{"date":"12/23","type":"word","pos":"n.","word":"compass","meaning":"指南針"},{"date":"12/23","type":"word","pos":"v.","word":"compete","meaning":"競爭"},{"date":"12/23","type":"phrase","pos":"片語","word":"had better","meaning":"最好……"},{"date":"12/23","type":"phrase","pos":"片語","word":"hand in","meaning":"繳交"},{"date":"12/23","type":"phrase","pos":"片語","word":"hand out","meaning":"發放"},
+      {"date":"12/24","type":"word","pos":"n.","word":"competition","meaning":"競賽"},{"date":"12/24","type":"word","pos":"v.","word":"complain","meaning":"抱怨"},{"date":"12/24","type":"word","pos":"adj./v.","word":"complete","meaning":"完整的；完成"},{"date":"12/24","type":"word","pos":"adj.","word":"complex","meaning":"複雜的"},{"date":"12/24","type":"word","pos":"n./v.","word":"compliment","meaning":"讚美"},{"date":"12/24","type":"phrase","pos":"片語","word":"hang out","meaning":"掛出；閒晃"},{"date":"12/24","type":"phrase","pos":"片語","word":"hang up","meaning":"掛斷（電話）"},{"date":"12/24","type":"phrase","pos":"片語","word":"have a good time","meaning":"玩得愉快"},
+      {"date":"12/25","type":"word","pos":"n.","word":"computer","meaning":"電腦"},{"date":"12/25","type":"word","pos":"v.","word":"concentrate","meaning":"專心"},{"date":"12/25","type":"word","pos":"n.","word":"concept","meaning":"概念"},{"date":"12/25","type":"word","pos":"n./v.","word":"concern","meaning":"關心；擔心"},{"date":"12/25","type":"word","pos":"n.","word":"concert","meaning":"音樂會"},{"date":"12/25","type":"phrase","pos":"片語","word":"have a cold","meaning":"感冒"},{"date":"12/25","type":"phrase","pos":"片語","word":"have nothing to do with","meaning":"與……無關"},{"date":"12/25","type":"phrase","pos":"片語","word":"have trouble V-ing","meaning":"做……有困難"},
+      {"date":"12/28","type":"word","pos":"v.","word":"conclude","meaning":"下結論"},{"date":"12/28","type":"word","pos":"n.","word":"condition","meaning":"狀況；條件"},{"date":"12/28","type":"word","pos":"v./n.","word":"conduct","meaning":"指導；行為"},{"date":"12/28","type":"word","pos":"adj.","word":"confident","meaning":"有自信的"},{"date":"12/28","type":"word","pos":"v.","word":"confuse","meaning":"使困惑"},{"date":"12/28","type":"phrase","pos":"片語","word":"head for","meaning":"朝……前進"},{"date":"12/28","type":"phrase","pos":"片語","word":"help oneself to","meaning":"自行取用"},{"date":"12/28","type":"phrase","pos":"片語","word":"hold on","meaning":"等一下；堅持"},
+      {"date":"12/29","type":"word","pos":"v.","word":"congratulate","meaning":"祝賀"},{"date":"12/29","type":"word","pos":"v.","word":"connect","meaning":"連接"},{"date":"12/29","type":"word","pos":"adj.","word":"conscious","meaning":"有意識的"},{"date":"12/29","type":"word","pos":"v.","word":"consider","meaning":"考慮"},{"date":"12/29","type":"word","pos":"adj.","word":"considerate","meaning":"體貼的"},{"date":"12/29","type":"phrase","pos":"片語","word":"in a hurry","meaning":"匆忙地"},{"date":"12/29","type":"phrase","pos":"片語","word":"in a word","meaning":"簡言之"},{"date":"12/29","type":"phrase","pos":"片語","word":"in addition to","meaning":"除了……之外（還）"},
+      {"date":"12/30","type":"word","pos":"v.","word":"consist","meaning":"由……組成"},{"date":"12/30","type":"word","pos":"adj.","word":"constant","meaning":"持續的"},{"date":"12/30","type":"word","pos":"n.","word":"construction","meaning":"建設"},{"date":"12/30","type":"word","pos":"v./n.","word":"contact","meaning":"接觸；聯絡"},{"date":"12/30","type":"word","pos":"v.","word":"contain","meaning":"包含"},{"date":"12/30","type":"phrase","pos":"片語","word":"in advance","meaning":"事先"},{"date":"12/30","type":"phrase","pos":"片語","word":"in case of","meaning":"萬一；以防"},{"date":"12/30","type":"phrase","pos":"片語","word":"in charge of","meaning":"負責"},
+      {"date":"12/31","type":"word","pos":"n./adj.","word":"content","meaning":"內容；滿意的"},{"date":"12/31","type":"word","pos":"n.","word":"contest","meaning":"比賽"},{"date":"12/31","type":"word","pos":"n.","word":"continent","meaning":"洲；大陸"},{"date":"12/31","type":"word","pos":"v.","word":"continue","meaning":"繼續"},{"date":"12/31","type":"word","pos":"n./v.","word":"contract","meaning":"合約"},{"date":"12/31","type":"phrase","pos":"片語","word":"in common","meaning":"共同點"},{"date":"12/31","type":"phrase","pos":"片語","word":"in fact","meaning":"事實上"},{"date":"12/31","type":"phrase","pos":"片語","word":"in front of","meaning":"在……前面"},
+      {"date":"1/4","type":"word","pos":"v./n.","word":"control","meaning":"控制"},{"date":"1/4","type":"word","pos":"adj.","word":"convenient","meaning":"方便的"},{"date":"1/4","type":"word","pos":"n.","word":"conversation","meaning":"對話"},{"date":"1/4","type":"word","pos":"v./n.","word":"cook","meaning":"烹調；廚師"},{"date":"1/4","type":"word","pos":"n.","word":"cookie","meaning":"餅乾"},{"date":"1/4","type":"phrase","pos":"片語","word":"in general","meaning":"一般來說"},{"date":"1/4","type":"phrase","pos":"片語","word":"in need of","meaning":"需要"},{"date":"1/4","type":"phrase","pos":"片語","word":"in order to","meaning":"為了……"},
+      {"date":"1/5","type":"word","pos":"adj.","word":"cool","meaning":"涼爽的；酷的"},{"date":"1/5","type":"word","pos":"v.","word":"cooperate","meaning":"合作"},{"date":"1/5","type":"word","pos":"v.","word":"cope","meaning":"應付"},{"date":"1/5","type":"word","pos":"v./n.","word":"copy","meaning":"複製；副本"},{"date":"1/5","type":"word","pos":"n.","word":"corn","meaning":"玉米"},{"date":"1/5","type":"phrase","pos":"片語","word":"in person","meaning":"親自"},{"date":"1/5","type":"phrase","pos":"片語","word":"in public","meaning":"公開地"},{"date":"1/5","type":"phrase","pos":"片語","word":"in search of","meaning":"尋找"},
+      {"date":"1/6","type":"word","pos":"n.","word":"corner","meaning":"角落"},{"date":"1/6","type":"word","pos":"adj./v.","word":"correct","meaning":"正確的；更正"},{"date":"1/6","type":"word","pos":"v./n.","word":"cost","meaning":"花費；費用"},{"date":"1/6","type":"word","pos":"n.","word":"cotton","meaning":"棉花"},{"date":"1/6","type":"word","pos":"n.","word":"couch","meaning":"沙發"},{"date":"1/6","type":"phrase","pos":"片語","word":"in spite of","meaning":"儘管"},{"date":"1/6","type":"phrase","pos":"片語","word":"in terms of","meaning":"就……而言"},{"date":"1/6","type":"phrase","pos":"片語","word":"in time","meaning":"及時"},
+      {"date":"1/7","type":"word","pos":"v./n.","word":"cough","meaning":"咳嗽"},{"date":"1/7","type":"word","pos":"v.","word":"count","meaning":"數數"},{"date":"1/7","type":"word","pos":"n.","word":"country","meaning":"國家；鄉下"},{"date":"1/7","type":"word","pos":"n.","word":"countryside","meaning":"鄉村"},{"date":"1/7","type":"word","pos":"n.","word":"couple","meaning":"夫妻；一對"},{"date":"1/7","type":"phrase","pos":"片語","word":"in vain","meaning":"徒勞無功"},{"date":"1/7","type":"phrase","pos":"片語","word":"instead of","meaning":"代替；而不是"},{"date":"1/7","type":"phrase","pos":"片語","word":"keep an eye on","meaning":"留意；監視"},
+      {"date":"1/8","type":"word","pos":"n.","word":"courage","meaning":"勇氣"},{"date":"1/8","type":"word","pos":"n.","word":"course","meaning":"課程；過程"},{"date":"1/8","type":"word","pos":"n.","word":"court","meaning":"法院；球場"},{"date":"1/8","type":"word","pos":"n.","word":"cousin","meaning":"堂/表兄弟姊妹"},{"date":"1/8","type":"word","pos":"v./n.","word":"cover","meaning":"覆蓋；封面"},{"date":"1/8","type":"phrase","pos":"片語","word":"keep in mind","meaning":"牢記在心"},{"date":"1/8","type":"phrase","pos":"片語","word":"keep in touch with","meaning":"與……保持聯絡"},{"date":"1/8","type":"phrase","pos":"片語","word":"keep on","meaning":"繼續"},
+      {"date":"1/11","type":"word","pos":"n.","word":"cow","meaning":"母牛"},{"date":"1/11","type":"word","pos":"n.","word":"cowboy","meaning":"牛仔"},{"date":"1/11","type":"word","pos":"n./v.","word":"crack","meaning":"裂縫；裂開"},{"date":"1/11","type":"word","pos":"n.","word":"craft","meaning":"工藝"},{"date":"1/11","type":"word","pos":"v./n.","word":"crash","meaning":"碰撞；墜毀"},{"date":"1/11","type":"phrase","pos":"片語","word":"know about","meaning":"了解"},{"date":"1/11","type":"phrase","pos":"片語","word":"keep one's word","meaning":"遵守諾言"},{"date":"1/11","type":"phrase","pos":"片語","word":"keep up with","meaning":"跟上……"},
+      {"date":"1/12","type":"word","pos":"adj.","word":"crazy","meaning":"瘋狂的"},{"date":"1/12","type":"word","pos":"n.","word":"cream","meaning":"鮮奶油"},{"date":"1/12","type":"word","pos":"v.","word":"create","meaning":"創造"},{"date":"1/12","type":"word","pos":"n.","word":"credit","meaning":"信用；榮譽"},{"date":"1/12","type":"word","pos":"n.","word":"creature","meaning":"生物"},{"date":"1/12","type":"phrase","pos":"片語","word":"knock down","meaning":"撞倒"},{"date":"1/12","type":"phrase","pos":"片語","word":"knock out","meaning":"擊倒"},{"date":"1/12","type":"phrase","pos":"片語","word":"know of","meaning":"听说过"},
+      {"date":"1/13","type":"word","pos":"n.","word":"credit card","meaning":"信用卡"},{"date":"1/13","type":"word","pos":"n.","word":"crime","meaning":"犯罪"},{"date":"1/13","type":"word","pos":"n./adj.","word":"criminal","meaning":"罪犯"},{"date":"1/13","type":"word","pos":"n.","word":"crisis","meaning":"危機"},{"date":"1/13","type":"word","pos":"n.","word":"crop","meaning":"農作物"},{"date":"1/13","type":"phrase","pos":"片語","word":"later on","meaning":"後來"},{"date":"1/13","type":"phrase","pos":"片語","word":"lay off","meaning":"解僱"},{"date":"1/13","type":"phrase","pos":"片語","word":"lead the way","meaning":"帶路"},
+      {"date":"1/14","type":"word","pos":"v./n.","word":"cross","meaning":"穿越；十字架"},{"date":"1/14","type":"word","pos":"n.","word":"crowd","meaning":"人群"},{"date":"1/14","type":"word","pos":"adj.","word":"crowded","meaning":"擁擠的"},{"date":"1/14","type":"word","pos":"adj.","word":"cruel","meaning":"殘忍的"},{"date":"1/14","type":"word","pos":"v./n.","word":"cry","meaning":"哭泣；呼喊"},{"date":"1/14","type":"phrase","pos":"片語","word":"learn by heart","meaning":"背誦"},{"date":"1/14","type":"phrase","pos":"片語","word":"leave out","meaning":"漏掉；忽略"},{"date":"1/14","type":"phrase","pos":"片語","word":"let down","meaning":"使失望"},
+      {"date":"1/15","type":"word","pos":"n.","word":"culture","meaning":"文化"},{"date":"1/15","type":"word","pos":"n.","word":"cup","meaning":"杯子"},{"date":"1/15","type":"word","pos":"v./n.","word":"cure","meaning":"治療"},{"date":"1/15","type":"word","pos":"adj.","word":"curious","meaning":"好奇的"},{"date":"1/15","type":"word","pos":"n.","word":"curtain","meaning":"窗簾"},{"date":"1/15","type":"phrase","pos":"片語","word":"let go of","meaning":"鬆手；放開"},{"date":"1/15","type":"phrase","pos":"片語","word":"lie down","meaning":"躺下"},{"date":"1/15","type":"phrase","pos":"片語","word":"little by little","meaning":"逐漸地"},
+      {"date":"1/18","type":"word","pos":"n./v.","word":"curve","meaning":"曲線；彎曲"},{"date":"1/18","type":"word","pos":"n.","word":"cushion","meaning":"墊子"},{"date":"1/18","type":"word","pos":"n.","word":"custom","meaning":"習俗"},{"date":"1/18","type":"word","pos":"n.","word":"customer","meaning":"顧客"},{"date":"1/18","type":"word","pos":"v./n.","word":"cut","meaning":"切；剪"},{"date":"1/18","type":"phrase","pos":"片語","word":"live on","meaning":"以……為主食；靠……生活"},{"date":"1/18","type":"phrase","pos":"片語","word":"look around","meaning":"環顧四周"},{"date":"1/18","type":"phrase","pos":"片語","word":"look down on","meaning":"輕視"},
+      {"date":"1/19","type":"word","pos":"adj.","word":"cute","meaning":"可愛的"},{"date":"1/19","type":"word","pos":"v./n.","word":"cycle","meaning":"騎腳踏車；循環"},{"date":"1/19","type":"word","pos":"adj./adv.","word":"daily","meaning":"每日的"},{"date":"1/19","type":"word","pos":"n.","word":"dairy","meaning":"乳製品"},{"date":"1/19","type":"word","pos":"v./n.","word":"damage","meaning":"損害"},{"date":"1/19","type":"phrase","pos":"片語","word":"look into","meaning":"調查"},{"date":"1/19","type":"phrase","pos":"片語","word":"look like","meaning":"看起來像"},{"date":"1/19","type":"phrase","pos":"片語","word":"look out for","meaning":"留心；注意"}
+    ];
+
+    ALL_WORDS_DATA = EMBEDDED_DATA;
+
+    let currentQuestions = [];
+    let currentIndex = 0;
+    let score = 0;
+    let answeredCurrent = false;
+    let wrongQuestions = [];
+    let studentInfo = { className: "907", seatNo: "38", name: "劉真妮" };
+
+    // 預設 907 班級座號姓名名冊（九年七班 01 ~ 31 號 ＋ 38 號 劉真妮）
+    const DEFAULT_ROSTER = {
+      1: "陳品澄", 2: "潘宥任", 3: "林秉樂", 4: "麥藝霖", 5: "郭宸良",
+      6: "劉仲軒", 7: "吳孟駿", 8: "吳承翰", 9: "楊家宥", 10: "王陽晟",
+      11: "彭貝宇", 12: "宋昱翰", 13: "劉邑璽", 14: "周莛恩", 15: "蘇子睿",
+      16: "丘天玥", 17: "林盈妡", 18: "詹子晴", 19: "謝沛琪", 20: "曾沛繡",
+      21: "賴律穎", 22: "黃映綸", 23: "賴鈺涵", 24: "黃若涵", 25: "吳采容",
+      26: "邱筠雲", 27: "柯亮瑀", 28: "簡舒涵", 29: "陳言沁", 30: "馮羽婕",
+      31: "潘彥蓁",
+      38: "劉真妮"
+    };
+
+    function getStudentRoster() {
+      try {
+        const saved = localStorage.getItem("touqian_roster_907");
+        if (saved) return JSON.parse(saved);
+      } catch(e) {}
+      return DEFAULT_ROSTER;
+    }
+
+    function lookupStudentName() {
+      const noInput = document.getElementById("student-no");
+      const nameInput = document.getElementById("student-name");
+      const hint = document.getElementById("name-lookup-hint");
+      const val = noInput.value.trim();
+
+      if (!val) {
+        hint.innerHTML = "";
+        return;
+      }
+
+      const no = parseInt(val, 10);
+      const roster = getStudentRoster();
+
+      if (roster && roster[no]) {
+        nameInput.value = roster[no];
+        hint.innerHTML = `<span style="color: #16a34a; font-weight: 600;">✅ 座號 ${no} 號：${roster[no]}（若有誤可直接編輯）</span>`;
+      } else {
+        hint.innerHTML = `<span style="color: #b45309;">ℹ️ 名冊中尚無 ${no} 號，請手動輸入姓名（或點上方設定名冊）</span>`;
+      }
+    }
+
+    function openRosterModal() {
+      const roster = getStudentRoster();
+      const lines = [];
+      const keys = Object.keys(roster).map(k => parseInt(k, 10)).sort((a, b) => a - b);
+      keys.forEach(k => {
+        lines.push(`${k} ${roster[k]}`);
+      });
+      document.getElementById("roster-textarea").value = lines.join("\n");
+      document.getElementById("roster-modal").style.display = "flex";
+    }
+
+    function closeRosterModal() {
+      document.getElementById("roster-modal").style.display = "none";
+    }
+
+    function saveRoster() {
+      const text = document.getElementById("roster-textarea").value;
+      const lines = text.split("\n");
+      const newRoster = {};
+      lines.forEach(line => {
+        const trimmed = line.trim();
+        if (!trimmed) return;
+        const parts = trimmed.split(/[\s,，\t]+/);
+        if (parts.length >= 2) {
+          const no = parseInt(parts[0], 10);
+          if (!isNaN(no)) {
+            newRoster[no] = parts.slice(1).join(" ");
+          }
+        }
+      });
+      localStorage.setItem("touqian_roster_907", JSON.stringify(newRoster));
+      closeRosterModal();
+      lookupStudentName();
+      alert("✅ 907 班座號姓名名冊已成功儲存！");
+    }
+
+    function resetDefaultRoster() {
+      if (confirm("確定要恢復 907 班預設名冊嗎？")) {
+        localStorage.removeItem("touqian_roster_907");
+        openRosterModal();
+      }
+    }
+
+    let isTeacherRangeUnlocked = false;
+
+    // 日期起訖功能（預設鎖定，需密碼 123456 解鎖）
+    function initDateSelectors() {
+      const dates = [...new Set(EMBEDDED_DATA.map(item => item.date))];
+      const startSelect = document.getElementById("date-start");
+      const endSelect = document.getElementById("date-end");
+
+      startSelect.innerHTML = "";
+      endSelect.innerHTML = "";
+
+      dates.forEach(d => {
+        const opt1 = document.createElement("option");
+        opt1.value = d;
+        opt1.textContent = d;
+        startSelect.appendChild(opt1);
+
+        const opt2 = document.createElement("option");
+        opt2.value = d;
+        opt2.textContent = d;
+        endSelect.appendChild(opt2);
+      });
+
+      // 預設鎖定 9/14 ~ 10/5 (目前未小考進度)
+      let initStart = "9/14";
+      let initEnd = "10/5";
+
+      // 1. 讀取先前本地儲存之老師設定
+      try {
+        const savedRange = JSON.parse(localStorage.getItem("touqian_quiz_range") || "null");
+        if (savedRange && savedRange.start && savedRange.end) {
+          initStart = savedRange.start;
+          initEnd = savedRange.end;
+        }
+      } catch(e) {}
+
+      startSelect.value = initStart;
+      endSelect.value = initEnd;
+
+      // 預設鎖定為不可直接變更
+      startSelect.disabled = true;
+      endSelect.disabled = true;
+
+      // 2. 向後端同步老師在雲端設定的最新測驗範圍
+      cloudGetActiveRange(function(res) {
+        if (res && res.start && res.end) {
+          startSelect.value = res.start;
+          endSelect.value = res.end;
+          try {
+            localStorage.setItem("touqian_quiz_range", JSON.stringify({ start: res.start, end: res.end }));
+          } catch(e) {}
+          updatePoolStats();
+        }
+      });
+    }
+
+    function toggleTeacherRangeSetting() {
+      const btn = document.getElementById("teacher-range-btn");
+      const lockIcon = document.getElementById("range-lock-icon");
+      const lockNotice = document.getElementById("range-lock-notice");
+      const lockText = document.getElementById("range-lock-text");
+      const startSelect = document.getElementById("date-start");
+      const endSelect = document.getElementById("date-end");
+
+      if (!isTeacherRangeUnlocked) {
+        // 要求輸入密碼 123456
+        const pwd = prompt("🔐【老師權限驗證】\n本測驗起訖日期僅限「38號 劉真妮 老師」有權限設定。\n請輸入教師管理密碼 (123456)：");
+        if (pwd === null) return;
+        if (pwd.trim() !== "123456") {
+          alert("❌ 密碼錯誤！您不是 38 號 劉真妮 老師，無權限更改測驗日期範圍。");
+          return;
+        }
+
+        // 自動切換為 38 號 劉真妮 老師身份
+        document.getElementById("student-no").value = "38";
+        document.getElementById("student-name").value = "劉真妮";
+        lookupStudentName();
+
+        // 解鎖成功
+        isTeacherRangeUnlocked = true;
+        startSelect.disabled = false;
+        endSelect.disabled = false;
+        lockIcon.innerText = "🔓";
+        btn.innerHTML = "💾 儲存並重新鎖定";
+        btn.style.color = "#15803d";
+        btn.style.borderColor = "#86efac";
+        btn.style.background = "#f0fdf4";
+
+        lockNotice.style.background = "#f0fdf4";
+        lockNotice.style.borderColor = "#86efac";
+        lockText.innerHTML = "🔓 <b style='color:#15803d;'>38號 劉真妮 老師已驗證登入</b>：請選擇起訖日期或點快捷鍵，選妥後請點「💾 儲存並重新鎖定」";
+        alert("✅ 38 號 劉真妮 老師身份驗證成功！\n您現在可以自由設定本次測驗的起訖日期，選妥後請點擊「💾 儲存並重新鎖定」。");
+      } else {
+        // 儲存並重新鎖定
+        const sVal = startSelect.value;
+        const eVal = endSelect.value;
+        const sOrder = getDateOrder(sVal);
+        const eOrder = getDateOrder(eVal);
+
+        if (sOrder > eOrder) {
+          alert("起始日期不能大於結束日期，請重新檢查！");
+          return;
+        }
+
+        // 儲存於本機快取
+        try {
+          localStorage.setItem("touqian_quiz_range", JSON.stringify({ start: sVal, end: eVal }));
+        } catch(e) {}
+
+        // 若在 Google 雲端環境或 GitHub Pages，同步寫入 Google Apps Script 雲端屬性
+        cloudSetActiveRange("123456", sVal, eVal, function(res) {
+          if (res && res.success) {
+            console.log("雲端測驗範圍已更新：", res);
+          }
+        });
+
+        // 重新鎖定
+        isTeacherRangeUnlocked = false;
+        startSelect.disabled = true;
+        endSelect.disabled = true;
+        lockIcon.innerText = "🔒";
+        btn.innerHTML = "🔒 老師設定起訖(38號 劉真妮 專用)";
+        btn.style.color = "#b45309";
+        btn.style.borderColor = "#fde68a";
+        btn.style.background = "#fffbeb";
+
+        lockNotice.style.background = "#ffffff";
+        lockNotice.style.borderColor = "#e2e8f0";
+        lockText.innerHTML = "🔒 <b>僅限 38 號 劉真妮 老師有權限設定</b>（學生無權修改）";
+
+        updatePoolStats();
+        alert(`✅ 測驗範圍已由 38 號 劉真妮 老師成功更新並鎖定為：${sVal} ～ ${eVal}！\n907 班全體學生進入測驗時將統一套用此範圍。`);
+      }
+    }
+
+    function handlePresetClick(sDate, eDate, btnEl) {
+      if (!isTeacherRangeUnlocked) {
+        alert("🔒 測驗日期起訖僅限「38號 劉真妮 老師」有權限設定！\n學生無法自行更改。若為老師，請點右上角「🔒 老師設定起訖」輸入密碼 123456 解鎖。");
+        return;
+      }
+      setPresetDate(sDate, eDate, btnEl);
+    }
+
+    function getDateOrder(dStr) {
+      if (!dStr) return 0;
+      const parts = dStr.split("/");
+      const m = parseInt(parts[0], 10);
+      const d = parseInt(parts[1], 10);
+      const sortM = (m >= 8) ? m : (m + 12);
+      return sortM * 100 + d;
+    }
+
+    function isDateInRange(dStr, sDateStr, eDateStr) {
+      const order = getDateOrder(dStr);
+      const sOrder = getDateOrder(sDateStr);
+      const eOrder = getDateOrder(eDateStr);
+      return order >= sOrder && order <= eOrder;
+    }
+
+    function onDateRangeChange() {
+      if (!isTeacherRangeUnlocked) return;
+      const sVal = document.getElementById("date-start").value;
+      const eVal = document.getElementById("date-end").value;
+      const sOrder = getDateOrder(sVal);
+      const eOrder = getDateOrder(eVal);
+
+      if (sOrder > eOrder) {
+        document.getElementById("date-end").value = sVal;
+      }
+
+      document.querySelectorAll(".preset-btn").forEach(b => b.classList.remove("active"));
+      updatePoolStats();
+    }
+
+    function setPresetDate(sDate, eDate, btnEl) {
+      document.getElementById("date-start").value = sDate;
+      document.getElementById("date-end").value = eDate;
+      document.querySelectorAll(".preset-btn").forEach(b => b.classList.remove("active"));
+      if (btnEl) btnEl.classList.add("active");
+      updatePoolStats();
+    }
+
+    function getFilteredPool() {
+      const sDate = document.getElementById("date-start").value;
+      const eDate = document.getElementById("date-end").value;
+      const catVal = document.getElementById("cat-select").value;
+
+      let pool = ALL_WORDS_DATA.filter(item => isDateInRange(item.date, sDate, eDate));
+
+      if (catVal === "word") pool = pool.filter(p => p.type === "word");
+      if (catVal === "phrase") pool = pool.filter(p => p.type === "phrase");
+      return pool;
+    }
+
+    function updatePoolStats() {
+      const sDate = document.getElementById("date-start").value;
+      const eDate = document.getElementById("date-end").value;
+      const pool = getFilteredPool();
+
+      document.getElementById("stat-current-pool").innerText = pool.length;
+      document.getElementById("stat-pool-label").innerText = `${sDate}~${eDate} 題庫數`;
+
+      const qCount = Math.min(10, pool.length);
+      document.getElementById("stat-quiz-count").innerText = `${qCount} 題`;
+
+      const summary = document.getElementById("date-range-summary");
+      if (summary) {
+        summary.innerText = `已選取 ${pool.length} 個單字片語`;
+      }
+    }
+
+    function shuffle(arr) {
+      const a = [...arr];
+      for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+      }
+      return a;
+    }
+
+    function startQuiz() {
+      const sClass = document.getElementById("student-class").value.trim();
+      const sNo = document.getElementById("student-no").value.trim();
+      const sName = document.getElementById("student-name").value.trim();
+
+      if (!sClass || !sNo || !sName) {
+        alert("請完整輸入班級、座號與姓名後再開始測驗！");
+        return;
+      }
+      studentInfo = { className: sClass, seatNo: sNo, name: sName };
+
+      const pool = getFilteredPool();
+      if (pool.length === 0) {
+        alert("目前選取的起訖日期範圍內沒有單字，請重新調整日期！");
+        return;
+      }
+      if (pool.length < 4) {
+        alert("目前選取的範圍單字不足 4 個，無法產生四選一選項，請擴大起訖日期範圍！");
+        return;
+      }
+
+      const modeVal = document.getElementById("mode-select").value;
+
+      // 隨機抽題（最多 10 題，若範圍小於 10 題則全考）
+      const shuffledPool = shuffle(pool);
+      const selected = shuffledPool.slice(0, Math.min(10, shuffledPool.length));
+
+      currentQuestions = selected.map(target => {
+        let qType = modeVal;
+        if (qType === "mixed") {
+          qType = Math.random() > 0.5 ? "en-to-zh" : "zh-to-en";
+        }
+
+        const others = pool.filter(p => p.word !== target.word);
+        const distractors = shuffle(others).slice(0, 3);
+        let options = [];
+        if (qType === "en-to-zh") {
+          options = shuffle([target.meaning, ...distractors.map(d => d.meaning)]);
+        } else {
+          options = shuffle([target.word, ...distractors.map(d => d.word)]);
+        }
+
+        return {
+          target,
+          type: qType,
+          options,
+          userAnswer: null,
+          isCorrect: false
+        };
+      });
+
+      currentIndex = 0;
+      score = 0;
+      wrongQuestions = [];
+
+      document.getElementById("screen-start").style.display = "none";
+      document.getElementById("screen-result").style.display = "none";
+      document.getElementById("screen-quiz").style.display = "block";
+
+      renderQuestion();
+    }
+
+    function renderQuestion() {
+      answeredCurrent = false;
+      const q = currentQuestions[currentIndex];
+      const total = currentQuestions.length;
+
+      document.getElementById("progress-bar").style.width = ((currentIndex / total) * 100) + "%";
+      const ptsPerQ = Math.round(100 / total);
+      document.getElementById("quiz-progress-text").innerText = `第 ${currentIndex + 1} / ${total} 題（每題 ${ptsPerQ} 分）`;
+      document.getElementById("quiz-date-badge").innerText = `聯絡本 ${q.target.date}`;
+      document.getElementById("quiz-type-badge").innerText = q.target.type === "phrase" ? "重點片語" : `核心單字 (${q.target.pos})`;
+      document.getElementById("next-container").style.display = "none";
+
+      const promptText = document.getElementById("question-prompt-text");
+      const speakBtn = document.getElementById("speak-btn");
+
+      if (q.type === "en-to-zh") {
+        document.getElementById("question-mode-text").innerText = "英選中 選擇題";
+        promptText.innerText = q.target.word;
+        document.getElementById("question-hint").innerText = "請點選正確的中文意思：";
+        speakBtn.style.display = "inline-flex";
+        renderOptions(q.options, q.target.meaning);
+      } else {
+        document.getElementById("question-mode-text").innerText = "中選英 選擇題";
+        promptText.innerText = q.target.meaning;
+        document.getElementById("question-hint").innerText = "請點選正確的英文單字／片語：";
+        speakBtn.style.display = "none";
+        renderOptions(q.options, q.target.word);
+      }
+    }
+
+    function renderOptions(options, correctVal) {
+      const container = document.getElementById("options-container");
+      container.innerHTML = "";
+      options.forEach(opt => {
+        const btn = document.createElement("button");
+        btn.className = "option-btn";
+        btn.innerText = opt;
+        btn.onclick = () => selectOption(btn, opt, correctVal);
+        container.appendChild(btn);
+      });
+    }
+
+    function selectOption(btn, chosen, correctVal) {
+      if (answeredCurrent) return;
+      answeredCurrent = true;
+
+      const q = currentQuestions[currentIndex];
+      q.userAnswer = chosen;
+      const isCorrect = (chosen.trim().toLowerCase() === correctVal.trim().toLowerCase());
+      q.isCorrect = isCorrect;
+
+      const allBtns = document.querySelectorAll(".option-btn");
+      allBtns.forEach(b => {
+        b.onclick = null;
+        if (b.innerText.trim().toLowerCase() === correctVal.trim().toLowerCase()) {
+          b.classList.add("correct");
+        }
+      });
+
+      if (isCorrect) {
+        score += 10;
+      } else {
+        btn.classList.add("wrong");
+        wrongQuestions.push(q);
+      }
+
+      document.getElementById("next-container").style.display = "block";
+    }
+
+    function speakCurrentWord() {
+      const q = currentQuestions[currentIndex];
+      if (!q || !('speechSynthesis' in window)) return;
+      window.speechSynthesis.cancel();
+      const u = new SpeechSynthesisUtterance(q.target.word);
+      u.lang = 'en-US';
+      u.rate = 0.85;
+      window.speechSynthesis.speak(u);
+    }
+
+    function nextQuestion() {
+      currentIndex++;
+      if (currentIndex < currentQuestions.length) {
+        renderQuestion();
+      } else {
+        finishAndSubmit();
+      }
+    }
+
+    function finishAndSubmit() {
+      document.getElementById("screen-quiz").style.display = "none";
+      document.getElementById("screen-result").style.display = "block";
+
+      const correctCount = currentQuestions.filter(q => q.isCorrect).length;
+      score = (correctCount === currentQuestions.length) ? 100 : Math.round((correctCount / currentQuestions.length) * 100);
+
+      const sDate = document.getElementById("date-start").value;
+      const eDate = document.getElementById("date-end").value;
+      const rangeLabel = `${sDate} ～ ${eDate}`;
+      const fullRangeLabel = `${sDate}~${eDate}（共 ${currentQuestions.length} 題）`;
+
+      document.getElementById("result-student-info").innerHTML = `
+        <div style="font-size: 1.1rem; font-weight: 700; color: #1e3a8a; margin-bottom: 6px;">
+          <strong>${studentInfo.className} 班</strong> ｜ 
+          <strong>座號：${studentInfo.seatNo} 號</strong> ｜ 
+          <strong>姓名：${studentInfo.name}</strong>
+        </div>
+        <div style="display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; margin-top: 6px;">
+          <span style="background: #e0f2fe; color: #0284c7; padding: 4px 12px; border-radius: 999px; font-weight: 700; font-size: 0.88rem; border: 1px solid #bae6fd;">
+            📅 測驗起訖日期：${rangeLabel}
+          </span>
+          <span style="background: #fef3c7; color: #b45309; padding: 4px 12px; border-radius: 999px; font-weight: 700; font-size: 0.88rem; border: 1px solid #fde68a;">
+            📝 抽考題數：${currentQuestions.length} 題
+          </span>
+        </div>
+      `;
+
+      document.getElementById("result-score").innerText = score;
+
+      const feedback = document.getElementById("result-feedback");
+      if (score === 100) {
+        feedback.innerHTML = "🏆 滿分 100 分！全部答對，太優秀了！";
+        feedback.style.color = "#16a34a";
+      } else if (score >= 80) {
+        feedback.innerHTML = "🌟 表現優異！再複習一下錯題就滿分囉！";
+        feedback.style.color = "#2563eb";
+      } else if (score >= 60) {
+        feedback.innerHTML = "👍 及格了！請把答錯的單字記在筆記本喔！";
+        feedback.style.color = "#d97706";
+      } else {
+        feedback.innerHTML = "💪 加油！多抽考幾次，聯絡簿單字一定能背熟！";
+        feedback.style.color = "#dc2626";
+      }
+
+      const wrongBox = document.getElementById("wrong-container");
+      const wrongList = document.getElementById("wrong-items-list");
+      wrongList.innerHTML = "";
+
+      let wrongWordsText = "";
+      if (wrongQuestions.length > 0) {
+        wrongBox.style.display = "block";
+        wrongWordsText = wrongQuestions.map(wq => `${wq.target.word}(${wq.target.meaning})`).join("、");
+
+        wrongQuestions.forEach(wq => {
+          const item = document.createElement("div");
+          item.className = "wrong-card";
+          item.innerHTML = `
+            <div>
+              <strong style="color:#991b1b; font-size:1.05rem;">${wq.target.word}</strong>
+              <span style="color:#475569;">（${wq.target.meaning}）</span>
+              <span style="font-size:0.75rem; background:#fee2e2; color:#991b1b; padding:2px 6px; border-radius:4px; margin-left:4px;">${wq.target.date}</span>
+            </div>
+            <div style="font-size:0.85rem; color:#b91c1c;">
+              你的作答：${wq.userAnswer || '未作答'}
+            </div>
+          `;
+          wrongList.appendChild(item);
+        });
+      } else {
+        wrongBox.style.display = "none";
+        wrongWordsText = "無 (全對滿分)";
+      }
+
+      const toast = document.getElementById("cloud-status-toast");
+      toast.style.display = "flex";
+      toast.innerHTML = "⏳ 正在自動將成績登記至老師的雲端試算表...";
+
+      const payload = {
+        className: studentInfo.className,
+        seatNo: studentInfo.seatNo,
+        name: studentInfo.name,
+        score: score,
+        range: fullRangeLabel,
+        wrongWords: wrongWordsText
+      };
+
+      // 同步在本機保存一份測驗紀錄備份
+      try {
+        const localRecord = {
+          time: new Date().toLocaleString('zh-TW', { hour12: false }),
+          className: studentInfo.className,
+          seatNo: parseInt(studentInfo.seatNo, 10) || studentInfo.seatNo,
+          name: studentInfo.name,
+          score: score,
+          range: rangeLabel,
+          wrongWords: wrongWordsText
+        };
+        const list = JSON.parse(localStorage.getItem("touqian_scores_records") || "[]");
+        list.push(localRecord);
+        localStorage.setItem("touqian_scores_records", JSON.stringify(list));
+      } catch(e) {}
+
+      cloudSubmitScore(payload,
+        function(res) {
+          if (res && res.localOnly) {
+            toast.innerHTML = "💻 本機測試模式：交卷完成（滿分 100 分制）。若需全班同步請點上方設定雲端網址。";
+            toast.style.background = "#f1f5f9";
+            toast.style.borderColor = "#cbd5e1";
+            toast.style.color = "#475569";
+          } else if (res && res.success) {
+            toast.innerHTML = "✅ 成績已成功同步登記至 907 班雲端試算表！";
+            toast.style.background = "#ecfdf5";
+            toast.style.borderColor = "#a7f3d0";
+            toast.style.color = "#065f46";
+          } else {
+            toast.innerHTML = "⚠️ 成績已送出（請學生截圖本成績卡以防萬一）。";
+            toast.style.background = "#fffbeb";
+            toast.style.color = "#b45309";
+          }
+        },
+        function(err) {
+          toast.innerHTML = "⚠️ 雲端連線忙碌中，請學生截圖本頁成績繳交！";
+          toast.style.background = "#fffbeb";
+          toast.style.color = "#b45309";
+        }
+      );
+    }
+
+    function goHome() {
+      document.getElementById("screen-result").style.display = "none";
+      document.getElementById("screen-start").style.display = "block";
+      updatePoolStats();
+    }
+
+    let currentClassScores = [];
+    let currentScoreTab = 'roster';
+
+    function switchScoresTab(tabName) {
+      currentScoreTab = tabName;
+      const rosterBtn = document.getElementById("tab-btn-roster");
+      const logsBtn = document.getElementById("tab-btn-logs");
+      const rosterView = document.getElementById("scores-roster-view");
+      const logsView = document.getElementById("scores-logs-view");
+
+      if (tabName === 'roster') {
+        rosterBtn.style.background = "#1d4ed8";
+        rosterBtn.style.color = "#ffffff";
+        rosterBtn.style.borderColor = "#1d4ed8";
+        logsBtn.style.background = "#ffffff";
+        logsBtn.style.color = "#475569";
+        logsBtn.style.borderColor = "#cbd5e1";
+        rosterView.style.display = "block";
+        logsView.style.display = "none";
+      } else {
+        logsBtn.style.background = "#1d4ed8";
+        logsBtn.style.color = "#ffffff";
+        logsBtn.style.borderColor = "#1d4ed8";
+        rosterBtn.style.background = "#ffffff";
+        rosterBtn.style.color = "#475569";
+        rosterBtn.style.borderColor = "#cbd5e1";
+        logsView.style.display = "block";
+        rosterView.style.display = "none";
+      }
+    }
+
+    // 成績總覽（跨載具雲端同步）
+    function openScoresModal() {
+      const modal = document.getElementById("scores-modal");
+      modal.style.display = "flex";
+      const syncBadge = document.getElementById("scores-sync-status-badge");
+      const syncAlert = document.getElementById("scores-sync-status-alert");
+      const url = getGasApiUrl();
+      if (url || (typeof google !== "undefined" && google.script && google.script.run)) {
+        if (syncBadge) syncBadge.innerHTML = `<span style="font-size: 0.72rem; background: #ecfdf5; color: #047857; border: 1px solid #a7f3d0; padding: 2px 7px; border-radius: 999px; font-weight: 700;">🟢 跨載具雲端同步中</span>`;
+        if (syncAlert) syncAlert.innerHTML = `<span>🌐 <b>跨載具即時同步</b>：全班同學在不同手機、平板或電腦測驗，交卷後皆即時記錄於此，每位同學皆可互相查看全班成績！</span><span style="color: #2563eb; font-weight: 700; font-size: 0.75rem;">🔴 紅色為該座號最高分</span>`;
+      } else {
+        if (syncBadge) syncBadge.innerHTML = `<span style="font-size: 0.72rem; background: #fff7ed; color: #c2410c; border: 1px solid #ffedd5; padding: 2px 7px; border-radius: 999px; font-weight: 700;">⚠️ 單機模式(未連線)</span>`;
+        if (syncAlert) syncAlert.innerHTML = `<span style="color: #c2410c;">⚠️ <b>尚未連線雲端資料庫</b>：目前僅顯示此台裝置的單機紀錄。若要讓全班不同手機同步，請在 <code>index.html</code> 中設定 Google 網址或點首頁「🔗 雲端同步設定」。</span><span style="color: #2563eb; font-weight: 700; font-size: 0.75rem;">🔴 紅色為該座號最高分</span>`;
+      }
+      loadAndRenderScores();
+    }
+
+    function closeScoresModal() {
+      document.getElementById("scores-modal").style.display = "none";
+    }
+
+    function loadAndRenderScores() {
+      const rosterTbody = document.getElementById("class-roster-table-body");
+      const logsTbody = document.getElementById("scores-table-body");
+      if (rosterTbody) rosterTbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 24px; color: #64748b;">⏳ 正在連線雲端取得 907 班全班最新成績...</td></tr>';
+      if (logsTbody) logsTbody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 24px; color: #64748b;">⏳ 正在連線雲端取得 907 班全班最新成績...</td></tr>';
+
+      cloudGetAllScores(
+        function(list) {
+          currentClassScores = list || [];
+          renderAllScoresViews(currentClassScores);
+        },
+        function(err) {
+          console.error("雲端讀取失敗：", err);
+          const msg = (err && (err.message || err.toString())) || "連線逾時";
+          if (rosterTbody) {
+            rosterTbody.innerHTML = `<tr><td colspan="6" style="text-align: center; padding: 20px; color: #dc2626;">
+              ⚠️ 雲端成績連線失敗：${msg}<br>
+              <button class="btn btn-outline" style="font-size:0.8rem; margin-top:8px;" onclick="loadAndRenderScores()">🔄 點此重新連線</button>
+            </td></tr>`;
+          }
+          loadLocalScores();
+        }
+      );
+    }
+
+    function loadLocalScores() {
+      try {
+        const list = JSON.parse(localStorage.getItem("touqian_scores_records") || "[]");
+        currentClassScores = list;
+        renderAllScoresViews(list);
+      } catch(e) {
+        renderAllScoresViews([]);
+      }
+    }
+
+    function renderAllScoresViews(records) {
+      renderClassRosterTable(records);
+      renderScoresLogsTable(records);
+    }
+
+    // 檢視 1：907 班 全班 01 ~ 31 號成績一覽表（每人最高分與測驗狀態）
+    function renderClassRosterTable(records) {
+      const tbody = document.getElementById("class-roster-table-body");
+      if (!tbody) return;
+      tbody.innerHTML = "";
+
+      const roster = getStudentRoster();
+      const seatNumbers = Object.keys(roster).map(k => parseInt(k, 10)).sort((a, b) => a - b);
+
+      // 依座號整理各同學所有測驗
+      const seatRecordsMap = {};
+      records.forEach(r => {
+        const sNo = parseInt(r.seatNo, 10);
+        if (!isNaN(sNo)) {
+          if (!seatRecordsMap[sNo]) seatRecordsMap[sNo] = [];
+          seatRecordsMap[sNo].push(r);
+        }
+      });
+
+      let testedCount = 0;
+      let perfectCount = 0;
+      let totalMaxScore = 0;
+      const totalStudents = seatNumbers.filter(s => s <= 31).length;
+
+      seatNumbers.forEach(sNo => {
+        const sRecords = seatRecordsMap[sNo] || [];
+        const isTested = sRecords.length > 0;
+        const studentName = roster[sNo] || (sRecords[0] ? sRecords[0].name : "同學");
+
+        let maxScore = null;
+        let latestTime = "-";
+        let latestRange = "-";
+
+        if (isTested) {
+          if (sNo <= 31) testedCount++;
+          maxScore = Math.max(...sRecords.map(r => (r.score !== undefined ? Number(r.score) : 0)));
+          if (maxScore === 100 && sNo <= 31) perfectCount++;
+          if (sNo <= 31) totalMaxScore += maxScore;
+
+          // 找最新一筆
+          const sorted = [...sRecords].sort((a, b) => (b.time || '').localeCompare(a.time || ''));
+          latestTime = sorted[0].time || '-';
+          latestRange = sorted[0].range || '9/14~10/5';
+        }
+
+        const tr = document.createElement("tr");
+        tr.style.borderBottom = "1px solid var(--border)";
+        if (sNo === 38) {
+          tr.style.background = "#fffbeb"; // 老師列淺黃色突顯
+        }
+
+        let scoreBadge = '';
+        if (isTested) {
+          if (maxScore === 100) {
+            scoreBadge = `<span style="color: #dc2626; font-weight: 800; background: #fee2e2; border: 1.5px solid #ef4444; padding: 2px 8px; border-radius: 6px; display: inline-flex; align-items: center; gap: 4px;">
+              🔴 100 分 <small style="font-size:0.7rem; font-weight:700; color:#b91c1c;">(滿分)</small>
+            </span>`;
+          } else if (maxScore >= 80) {
+            scoreBadge = `<span style="color: #1d4ed8; font-weight: 700; background: #dbeafe; padding: 2px 8px; border-radius: 6px;">${maxScore} 分</span>`;
+          } else if (maxScore >= 60) {
+            scoreBadge = `<span style="color: #d97706; font-weight: 700; background: #fef3c7; padding: 2px 8px; border-radius: 6px;">${maxScore} 分</span>`;
+          } else {
+            scoreBadge = `<span style="color: #991b1b; font-weight: 600; background: #fee2e2; padding: 2px 8px; border-radius: 6px;">${maxScore} 分</span>`;
+          }
+        } else {
+          scoreBadge = `<span style="color: #94a3b8; font-size: 0.8rem; background: #f1f5f9; padding: 2px 8px; border-radius: 6px;">⚪ 尚未測驗</span>`;
+        }
+
+        const countText = isTested ? `<span style="color:#2563eb; font-weight:600;">${sRecords.length} 次</span>` : `<span style="color:#cbd5e1;">-</span>`;
+        const seatLabel = (sNo === 38) ? `38 號 <small style="color:#b45309;">(老師)</small>` : `${String(sNo).padStart(2, '0')} 號`;
+
+        tr.innerHTML = `
+          <td style="padding: 10px 8px; text-align: center; font-weight: 700; color: #1e3a8a;">${seatLabel}</td>
+          <td style="padding: 10px 8px; font-weight: 600;">${studentName}</td>
+          <td style="padding: 10px 8px; text-align: center;">${scoreBadge}</td>
+          <td style="padding: 10px 8px; text-align: center; font-size: 0.85rem;">${countText}</td>
+          <td style="padding: 10px 8px; text-align: center; font-size: 0.82rem; color: #475569;">
+            ${isTested ? `<span style="background:#e0f2fe; color:#0369a1; padding:2px 6px; border-radius:4px; font-weight:600;">${latestRange}</span>` : '-'}
+          </td>
+          <td style="padding: 10px 8px; font-size: 0.8rem; color: #475569;">${latestTime}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      // 更新統計摘要
+      const untestedCount = totalStudents - testedCount;
+      const avgScore = testedCount > 0 ? (totalMaxScore / testedCount).toFixed(1) : 0;
+      const summaryEl = document.getElementById("scores-count-summary");
+      if (summaryEl) {
+        summaryEl.innerHTML = `
+          <div style="display: flex; gap: 10px; flex-wrap: wrap; justify-content: space-between; align-items: center;">
+            <span>👥 <b>907 班 應考 ${totalStudents} 人</b> ｜ ✅ 已測驗：<b style="color:#15803d;">${testedCount} 人</b> ｜ ⏳ 尚未測驗：<b style="color:#dc2626;">${untestedCount} 人</b></span>
+            <span>🏆 滿分 100 分：<b style="color:#dc2626;">${perfectCount} 人</b> ｜ 已考平均最高分：<b style="color:#1d4ed8;">${avgScore} 分</b></span>
+          </div>
+        `;
+      }
+    }
+
+    // 檢視 2：全部交卷歷程明細紀錄
+    function renderScoresLogsTable(records) {
+      const tbody = document.getElementById("scores-table-body");
+      if (!tbody) return;
+      tbody.innerHTML = "";
+
+      if (!records || records.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 24px; color: #94a3b8;">目前尚無交卷紀錄，同學交卷後會即時同步！</td></tr>';
+        return;
+      }
+
+      // 依座號由小到大排序，同座號依測驗時間排序
+      const sortedRecords = [...records].sort((a, b) => {
+        const seatA = parseInt(a.seatNo, 10) || 999;
+        const seatB = parseInt(b.seatNo, 10) || 999;
+        if (seatA !== seatB) return seatA - seatB;
+        return (b.time || '').localeCompare(a.time || '');
+      });
+
+      // 統計每個座號的最高分
+      const maxScoresBySeat = {};
+      sortedRecords.forEach(r => {
+        const s = String(r.seatNo);
+        const sc = Number(r.score) || 0;
+        if (maxScoresBySeat[s] === undefined || sc > maxScoresBySeat[s]) {
+          maxScoresBySeat[s] = sc;
+        }
+      });
+
+      sortedRecords.forEach(r => {
+        const tr = document.createElement("tr");
+        tr.style.borderBottom = "1px solid var(--border)";
+
+        const s = String(r.seatNo);
+        const sc = Number(r.score) || 0;
+        const isHighest = (sc === maxScoresBySeat[s]);
+
+        let scoreBadge = '';
+        if (isHighest) {
+          scoreBadge = `<span style="color: #dc2626; font-weight: 800; background: #fee2e2; border: 1.5px solid #ef4444; padding: 2px 8px; border-radius: 6px; display: inline-flex; align-items: center; gap: 4px;">
+            🔴 ${r.score} 分 <small style="font-size:0.7rem; font-weight:700; color:#b91c1c;">(最高分)</small>
+          </span>`;
+        } else {
+          scoreBadge = (r.score >= 60)
+            ? `<span style="color:#2563eb; font-weight:700; background:#dbeafe; padding:2px 8px; border-radius:6px;">${r.score} 分</span>`
+            : `<span style="color:#64748b; font-weight:600; background:#f1f5f9; padding:2px 8px; border-radius:6px;">${r.score} 分</span>`;
+        }
+
+        tr.innerHTML = `
+          <td style="padding: 10px 8px; text-align: center; font-weight: 700; color: #1e3a8a;">${r.seatNo} 號</td>
+          <td style="padding: 10px 8px; font-weight: 600;">${r.name || '未填寫'}</td>
+          <td style="padding: 10px 8px; text-align: center; font-size: 0.85rem;">
+            <span style="background: #e0f2fe; color: #0369a1; padding: 3px 8px; border-radius: 6px; font-weight: 600; border: 1px solid #bae6fd;">
+              ${r.range || '9/14~10/5'}
+            </span>
+          </td>
+          <td style="padding: 10px 8px; text-align: center;">${scoreBadge}</td>
+          <td style="padding: 10px 8px; font-size: 0.8rem; color: #475569;">${r.time}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    // 清除全班成績（需驗證密碼 123456）
+    function promptClearScores() {
+      const pwd = prompt("⚠️ 請輸入清除全班成績密碼：");
+      if (pwd === null) return;
+      if (pwd.trim() !== "123456") {
+        alert("❌ 密碼錯誤！無法清除成績紀錄。");
+        return;
+      }
+
+      if (!confirm("🚨 警告：確定要徹底清除全班的所有小考成績紀錄嗎？\n此動作將清空所有成績與作答紀錄，無法復原！")) {
+        return;
+      }
+
+      // 清除本機儲存快取
+      localStorage.removeItem("touqian_scores_records");
+      currentClassScores = [];
+
+      const rosterTbody = document.getElementById("class-roster-table-body");
+      const logsTbody = document.getElementById("scores-table-body");
+      if (rosterTbody) rosterTbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 24px; color: #dc2626;">⏳ 正在清除成績紀錄...</td></tr>';
+      if (logsTbody) logsTbody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 24px; color: #dc2626;">⏳ 正在清除成績紀錄...</td></tr>';
+
+      cloudClearScores("123456", function(res) {
+        if (res && res.success) {
+          alert("✅ 全班成績紀錄已全數清除完畢！");
+        } else {
+          alert("⚠️ 清除提示：" + (res && res.message ? res.message : "已清除本機紀錄"));
+        }
+        loadAndRenderScores();
+      }, function(err) {
+        alert("⚠️ 雲端試算表清除失敗：" + err.toString());
+        loadAndRenderScores();
+      });
+    }
+
+    // 初始化日期起訖選單與題庫數量
+    initDateSelectors();
+    updatePoolStats();
+    updateSyncStatusBadge();
+  </script>
+
+  <!-- 班級座號名冊設定 Modal -->
+  <div id="roster-modal" class="modal-backdrop">
+    <div class="modal-content">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+        <h3 style="font-size: 1.15rem; color: #1e3a8a; margin: 0;">📋 設定班級座號姓名名冊</h3>
+        <button type="button" onclick="closeRosterModal()" style="border: none; background: transparent; font-size: 1.3rem; cursor: pointer; color: #64748b;">✖</button>
+      </div>
+      <p style="font-size: 0.84rem; color: #64748b; line-height: 1.5; margin-bottom: 10px;">
+        學生輸入座號時會自動帶出此處設定的姓名。<br>
+        可直接由 Excel 複製貼上，每行一位（格式：<code>座號 姓名</code>，例如 <code>1 王小明</code>）：
+      </p>
+      <textarea id="roster-textarea" style="width: 100%; height: 200px; padding: 10px; border: 1px solid var(--border); border-radius: 8px; font-family: monospace; font-size: 0.9rem; line-height: 1.6; resize: vertical; box-sizing: border-box;"></textarea>
+      
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 14px; gap: 8px;">
+        <button type="button" class="btn btn-outline" style="font-size: 0.82rem; padding: 6px 10px;" onclick="resetDefaultRoster()">🔄 恢復範例名冊</button>
+        <div style="display: flex; gap: 8px;">
+          <button type="button" class="btn btn-outline" style="font-size: 0.82rem; padding: 6px 12px;" onclick="closeRosterModal()">取消</button>
+          <button type="button" class="btn btn-primary" style="font-size: 0.82rem; padding: 6px 14px;" onclick="saveRoster()">💾 儲存名冊</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 小考成績紀錄 Modal (跨載具全班同步) -->
+  <div id="scores-modal" class="modal-backdrop">
+    <div class="modal-content" style="max-width: 780px; max-height: 88vh; display: flex; flex-direction: column;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <h3 style="font-size: 1.18rem; color: #1e3a8a; margin: 0; display: flex; align-items: center; gap: 6px;">
+            📊 907 班 全班成績排行榜／紀錄總覽
+          </h3>
+          <span id="scores-sync-status-badge">
+            <span style="font-size: 0.72rem; background: #ecfdf5; color: #047857; border: 1px solid #a7f3d0; padding: 2px 7px; border-radius: 999px; font-weight: 700;">🟢 跨載具雲端同步</span>
+          </span>
+        </div>
+        <button type="button" onclick="closeScoresModal()" style="border: none; background: transparent; font-size: 1.3rem; cursor: pointer; color: #64748b;">✖</button>
+      </div>
+
+      <div id="scores-sync-status-alert" style="font-size: 0.8rem; color: #334155; background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 7px 12px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 6px;">
+        <span>🌐 <b>跨載具即時同步</b>：全班同學在不同手機、平板或電腦測驗，交卷後皆即時記錄於此，每位同學皆可互相查看全班成績！</span>
+        <span style="color: #2563eb; font-weight: 700; font-size: 0.75rem;">🔴 紅色為該座號最高分</span>
+      </div>
+
+      <!-- 分頁切換器 -->
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; flex-wrap: wrap; gap: 6px;">
+        <div style="display: flex; gap: 6px;">
+          <button type="button" id="tab-btn-roster" class="btn" style="padding: 6px 12px; font-size: 0.82rem; background: #1d4ed8; color: #fff; border: 1px solid #1d4ed8; border-radius: 6px;" onclick="switchScoresTab('roster')">
+            👥 全班 01~31 號成績表（每人最高分）
+          </button>
+          <button type="button" id="tab-btn-logs" class="btn" style="padding: 6px 12px; font-size: 0.82rem; background: #ffffff; color: #475569; border: 1px solid #cbd5e1; border-radius: 6px;" onclick="switchScoresTab('logs')">
+            📋 全部交卷明細紀錄（所有歷程）
+          </button>
+        </div>
+        <div style="display: flex; gap: 6px;">
+          <button type="button" class="btn btn-outline" style="font-size: 0.78rem; padding: 4px 10px;" onclick="loadAndRenderScores()">🔄 重新整理</button>
+          <button type="button" class="btn btn-outline" style="color: #dc2626; border-color: #fca5a5; font-size: 0.78rem; padding: 4px 10px;" onclick="promptClearScores()">🗑️ 清除全班成績(需密碼)</button>
+        </div>
+      </div>
+
+      <!-- 統計摘要條 -->
+      <div id="scores-count-summary" style="font-size: 0.8rem; color: #475569; margin-bottom: 8px; background: #f8fafc; padding: 6px 10px; border-radius: 6px; border: 1px solid #e2e8f0;">
+        載入中...
+      </div>
+
+      <!-- 檢視 1：全班座號成績表 (01 ~ 31 號) -->
+      <div id="scores-roster-view" style="overflow-y: auto; flex: 1; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 12px;">
+        <table style="width: 100%; border-collapse: collapse; font-size: 0.86rem; text-align: left;">
+          <thead style="background: #f1f5f9; position: sticky; top: 0; color: #334155; font-weight: 700; z-index: 2;">
+            <tr>
+              <th style="padding: 9px 8px; border-bottom: 2px solid var(--border); width: 60px; text-align: center;">座號</th>
+              <th style="padding: 9px 8px; border-bottom: 2px solid var(--border); width: 85px;">姓名</th>
+              <th style="padding: 9px 8px; border-bottom: 2px solid var(--border); width: 130px; text-align: center;">🏆 最高得分</th>
+              <th style="padding: 9px 8px; border-bottom: 2px solid var(--border); width: 90px; text-align: center;">測驗次數</th>
+              <th style="padding: 9px 8px; border-bottom: 2px solid var(--border); width: 120px; text-align: center;">最新進度</th>
+              <th style="padding: 9px 8px; border-bottom: 2px solid var(--border); width: 130px;">最新交卷時間</th>
+            </tr>
+          </thead>
+          <tbody id="class-roster-table-body">
+            <tr>
+              <td colspan="6" style="text-align: center; padding: 24px; color: #94a3b8;">載入中...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- 檢視 2：全部交卷歷程明細 -->
+      <div id="scores-logs-view" style="overflow-y: auto; flex: 1; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 12px; display: none;">
+        <table style="width: 100%; border-collapse: collapse; font-size: 0.86rem; text-align: left;">
+          <thead style="background: #f1f5f9; position: sticky; top: 0; color: #334155; font-weight: 700; z-index: 2;">
+            <tr>
+              <th style="padding: 9px 8px; border-bottom: 2px solid var(--border); width: 60px; text-align: center;">座號</th>
+              <th style="padding: 9px 8px; border-bottom: 2px solid var(--border); width: 85px;">姓名</th>
+              <th style="padding: 9px 8px; border-bottom: 2px solid var(--border); width: 120px; text-align: center;">📅 測驗起訖日期</th>
+              <th style="padding: 9px 8px; border-bottom: 2px solid var(--border); width: 110px; text-align: center;">🏆 測驗得分</th>
+              <th style="padding: 9px 8px; border-bottom: 2px solid var(--border); width: 140px;">交卷時間</th>
+            </tr>
+          </thead>
+          <tbody id="scores-table-body">
+            <tr>
+              <td colspan="5" style="text-align: center; padding: 24px; color: #94a3b8;">載入中...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <div style="font-size: 0.78rem; color: #94a3b8;">💡 試算表亦已設定為交卷即時自動按座號排序，座號最高分以紅色醒目標示</div>
+        <button type="button" class="btn btn-primary" style="font-size: 0.85rem; padding: 6px 18px;" onclick="closeScoresModal()">關閉</button>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
